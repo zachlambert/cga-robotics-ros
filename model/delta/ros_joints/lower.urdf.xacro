@@ -4,7 +4,7 @@
 
 <xacro:macro name="joints_lower" params="number">
 
-<joint name="lower_${number}_alpha" type="revolute">
+<joint name="alpha_${number}" type="revolute">
     <axis xyz="0 1 0"/>
     <limit effort="1000.0" lower="${-pi/2}" upper="${pi/2}" velocity="0.5"/>
     <origin
@@ -19,7 +19,7 @@
 <link name="lower_${number}_root">
 </link>
 
-<joint name="lower_${number}_L_beta_top" type="revolute">
+<joint name="beta_${number}" type="revolute">
     <axis xyz="0 0 1"/>
     <limit effort="1000.0" lower="${-pi/2}" upper="${pi/2}" velocity="0.5"/>
     <origin
@@ -30,7 +30,7 @@
     <child link="lower_${number}_L_link"/>
 </joint>
 
-<joint name="lower_${number}_L_beta_bot" type="revolute">
+<joint name="beta_${number}_L_bot" type="revolute">
     <axis xyz="0 0 1"/>
     <limit effort="1000.0" lower="${-pi/2}" upper="${pi/2}" velocity="0.5"/>
     <origin
@@ -39,13 +39,14 @@
     />
     <parent link="lower_${number}_L_link"/>
     <child link="lower_${number}_L_link_end"/>
+    <mimic joint="beta_${number}" multiplier="-1"/>
 </joint>
 
 <!-- Virtual link -->
 <link name="lower_${number}_L_link_end">
 </link>
 
-<joint name="lower_${number}_L_gamma" type="revolute">
+<joint name="gamma_${number}" type="revolute">
     <axis xyz="0 1 0"/>
     <limit effort="1000.0" lower="${-pi/2}" upper="${pi/2}" velocity="0.5"/>
     <origin
@@ -69,7 +70,7 @@
     <child link="chain_${number}_end"/>
 </joint>
 
-<joint name="lower_${number}_R_beta_top" type="revolute">
+<joint name="beta_${number}_R_top" type="revolute">
     <axis xyz="0 0 1"/>
     <limit effort="1000.0" lower="${-pi/2}" upper="${pi/2}" velocity="0.5"/>
     <origin
@@ -78,6 +79,7 @@
     />
     <parent link="lower_${number}_root"/>
     <child link="lower_${number}_R_link"/>
+    <mimic joint="beta_${number}"/>
 </joint>
 
 <!-- Virtual link -->
