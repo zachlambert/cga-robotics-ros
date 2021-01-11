@@ -15,10 +15,11 @@ find_package(cbot REQUIRED)
 
 include_directories(
     ${catkin_INCLUDE_DIRS}
+    include
 )
 
-add_executable(cbot_fk src/fk/main.cpp)
-target_link_libraries(cbot_fk
+add_executable(delta_fk src/delta/fk.cpp)
+target_link_libraries(delta_fk
     ${catkin_LIBRARIES}
     cbot
 )

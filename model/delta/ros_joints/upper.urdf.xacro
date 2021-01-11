@@ -22,10 +22,10 @@
 <transmission name="theta_${number}_tran">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="theta_${number}">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="theta_${number}">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
     </actuator>
 </transmission>

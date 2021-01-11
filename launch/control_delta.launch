@@ -1,4 +1,11 @@
 <launch>
+    <param name="robot_description"
+    command="xacro '$(find cga_robotics_ros)/model/delta/ros.urdf.xacro'"/>
+
+    <rosparam
+        file="$(find cga_robotics_ros)/config/delta_controllers.yaml"
+        command="load"
+    />
 
     <param name="robot_description"
         command="xacro '$(find cga_kinematics)/model/delta/ros.urdf.xacro'"/>

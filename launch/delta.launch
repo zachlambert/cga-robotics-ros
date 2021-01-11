@@ -1,0 +1,52 @@
+<launch>
+    <!-- Load config and robot description -->
+    <param
+        name="robot_description"
+        command="xacro '$(find cga_robotics_ros)/model/delta/ros.urdf.xacro'"
+    />
+    <param
+        name="robot_description_sdf"
+        command="xacro '$(find cga_robotics_ros)/model/delta/gazebo.sdf.xacro'"
+    />
+
+    <!-- Spawn model in gazebo -->
+    <rosparam
+        file="$(find cga_robotics_ros)/config/delta_gazebo_control_gains.yaml"
+        command="load"
+    />
+    <node
+        name="spawn_model"
+        pkg="gazebo_ros"
+        type="spawn_model"
+        args="-param robot_description_sdf -sdf -x 0 -y 0 -z 0 -model delta -b -gazebo_namespace gzserver"
+    />
+
+    <!-- Start ros_control -->
+    <rosparam
+        file="$(find cga_robotics_ros)/config/delta_controllers.yaml"
+        command="load"
+    />
+    <node
+        name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        args="theta_1_controller theta_2_controller theta_3_controller joint_state_controller"
+    />
+
+    <!-- Start FK node and robot state publisher -->
+    <node
+        pkg="cga_robotics_ros"
+        type="delta_fk"
+        name="delta_fk">
+        <remap from="joint_states_in" to="joint_states"/>
+        <remap from="joint_states_out" to="joint_states_complete"/>
+    </node>
+    <node
+        pkg="robot_state_publisher"
+        type="robot_state_publisher"
+        name="robot_state_publisher">
+        <remap from="joint_states" to="joint_states_complete"/>
+    </node>
+
+</launch>

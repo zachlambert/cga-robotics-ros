@@ -1,5 +1,5 @@
 gazebo_ros_control:
     pid_gains:
-        theta_1: {p: 10, i: 0, d: 0.5}
-        theta_2: {p: 10, i: 0, d: 0.5}
-        theta_3: {p: 10, i: 0, d: 0.5}
+        theta_1: {p: 40, i: 0, d: 0.5}
+        theta_2: {p: 40, i: 0, d: 0.5}
+        theta_3: {p: 40, i: 0, d: 0.5}
