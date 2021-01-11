@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<sdf version='1.4' xmlns:xacro="http://www.ros.org/wiki/xacro">
+<model name="delta">
+<selfCollide>true</selfCollide>
+
+<joint name="world_fix" type="fixed">
+    <pose>0 0 0 0 0 0</pose>
+    <parent>world</parent>
+    <child>base</child>
+</joint>
+<physics>
+    <ode>
+        <island_threads>
+            3
+        </island_threads>
+        <solver>
+            <iters>200</iters>
+        </solver>
+    </ode>
+</physics>
+
+<xacro:include filename="parameters.xacro"/>
+<xacro:include filename="../macros/inertia.xacro"/>
+
+<xacro:include filename="gazebo_links/base.sdf.xacro"/>
+<xacro:include filename="gazebo_links/upper.sdf.xacro"/>
+<xacro:include filename="gazebo_links/lower.sdf.xacro"/>
+<xacro:include filename="gazebo_links/end_effector.sdf.xacro"/>
+
+<xacro:include filename="gazebo_joints/upper.sdf.xacro"/>
+<xacro:include filename="gazebo_joints/lower.sdf.xacro"/>
+<xacro:include filename="gazebo_joints/end_effector.sdf.xacro"/>
+
+<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+
+</model>
+</sdf>

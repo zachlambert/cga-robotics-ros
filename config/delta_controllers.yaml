@@ -1,0 +1,15 @@
+theta_1_controller:
+    type: position_controllers/JointPositionController
+    joint: theta_1
+
+theta_2_controller:
+    type: position_controllers/JointPositionController
+    joint: theta_2
+
+theta_3_controller:
+    type: position_controllers/JointPositionController
+    joint: theta_3
+
+joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 20

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros_cga_robotics</name>
+  <name>cga_robotics_ros</name>
   <version>0.0.0</version>
-  <description>The ros_cga_robotics package</description>
+  <description>The cga_robotics_ros package</description>
   <maintainer email="zachalambert@gmail.com">Zach Lambert</maintainer>
   <license>TODO</license>
 

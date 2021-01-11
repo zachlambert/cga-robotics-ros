@@ -1,0 +1,9 @@
+delta:
+    structure:
+        base_radius: 0.15
+        ee_radius: 0.05
+        upper_length: 0.3
+        lower_length: 0.3
+    joints:
+        lower_limit: -45
+        upper_limit: 90
