@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ros_cga_robotics</name>
+  <version>0.0.0</version>
+  <description>The ros_cga_robotics package</description>
+  <maintainer email="zachalambert@gmail.com">Zach Lambert</maintainer>
+  <license>TODO</license>
+
+  <depend>roscpp</depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+  </export>
+</package>
