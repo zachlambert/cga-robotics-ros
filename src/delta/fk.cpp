@@ -18,18 +18,18 @@ public:
             "joint_states_out", 1
         );
 
-        theta_names[0] = "theta_1";
-        theta_names[1] = "theta_2";
-        theta_names[2] = "theta_3";
-        alpha_names[0] = "alpha_1";
-        alpha_names[1] = "alpha_2";
-        alpha_names[2] = "alpha_3";
-        beta_names[0] = "beta_1";
-        beta_names[1] = "beta_2";
-        beta_names[2] = "beta_3";
-        gamma_names[0] = "gamma_1";
-        gamma_names[1] = "gamma_2";
-        gamma_names[2] = "gamma_3";
+        n.param("delta/joints/theta_1", theta_names[0], std::string("theta_1"));
+        n.param("delta/joints/theta_2", theta_names[1], std::string("theta_2"));
+        n.param("delta/joints/theta_3", theta_names[2], std::string("theta_3"));
+        n.param("delta/joints/alpha_1", alpha_names[0], std::string("alpha_1"));
+        n.param("delta/joints/alpha_2", alpha_names[1], std::string("alpha_2"));
+        n.param("delta/joints/alpha_3", alpha_names[2], std::string("alpha_3"));
+        n.param("delta/joints/beta_1", beta_names[0], std::string("beta_1"));
+        n.param("delta/joints/beta_2", beta_names[1], std::string("beta_2"));
+        n.param("delta/joints/beta_3", beta_names[2], std::string("beta_3"));
+        n.param("delta/joints/gamma_1", gamma_names[0], std::string("gamma_1"));
+        n.param("delta/joints/gamma_2", gamma_names[1], std::string("gamma_2"));
+        n.param("delta/joints/gamma_3", gamma_names[2], std::string("gamma_3"));
 
         ee_pose_pub = n.advertise<geometry_msgs::PoseStamped>(
             "ee_pose", 1
@@ -55,6 +55,7 @@ public:
         cbot::Delta::JointsDep joints_pos_dep;
         if (!delta.fk_pose(joints_pos, joints_pos_dep, pose)) {
             ROS_ERROR("Failed to do FK");
+            return;
         }
 
         // Copy the joint_states_in message, then append the dependent

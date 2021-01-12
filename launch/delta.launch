@@ -50,6 +50,15 @@
         <remap from="joint_states" to="joint_states_complete"/>
     </node>
 
+    <!-- Start IK node -->
+    <node
+        pkg="cga_robotics_ros"
+        type="delta_ik"
+        name="delta_ik"
+        output="screen"
+    />
+
+    <!-- Start visualisation and rqt for setting ee cmd -->
     <node
         name="rviz" pkg="rviz" type="rviz"
         args="-d $(find cga_robotics_ros)/config/view_robot.rviz"

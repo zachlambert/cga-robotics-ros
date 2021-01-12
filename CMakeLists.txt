@@ -23,3 +23,9 @@ target_link_libraries(delta_fk
     ${catkin_LIBRARIES}
     cbot
 )
+
+add_executable(delta_ik src/delta/ik.cpp)
+target_link_libraries(delta_ik
+    ${catkin_LIBRARIES}
+    cbot
+)
