@@ -50,20 +50,12 @@ public:
             }
         }
 
-        ROS_INFO("Theta 1 = %f", joints_pos.theta[0]);
-        ROS_INFO("Theta 2 = %f", joints_pos.theta[1]);
-        ROS_INFO("Theta 3 = %f", joints_pos.theta[2]);
-
         // Get the end effector pose and dependent joint values
         cbot::Pose pose;
         cbot::Delta::JointsDep joints_pos_dep;
         if (!delta.fk_pose(joints_pos, joints_pos_dep, pose)) {
             ROS_ERROR("Failed to do FK");
         }
-
-        ROS_INFO("Alpha 1 = %f", joints_pos_dep.alpha[0]);
-        ROS_INFO("Beta 1 = %f", joints_pos_dep.beta[1]);
-        ROS_INFO("Gamma 1 = %f", joints_pos_dep.gamma[2]);
 
         // Copy the joint_states_in message, then append the dependent
         // joints, which shouldn't be present in the original message

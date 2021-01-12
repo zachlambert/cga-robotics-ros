@@ -50,4 +50,15 @@
         <remap from="joint_states" to="joint_states_complete"/>
     </node>
 
+    <node
+        name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find cga_robotics_ros)/config/view_robot.rviz"
+    />
+    <node
+        name="rqt_gui"
+        pkg="rqt_gui"
+        type="rqt_gui"
+        args="--perspective-file $(find cga_robotics_ros)/config/delta.perspective"
+    />
+
 </launch>
