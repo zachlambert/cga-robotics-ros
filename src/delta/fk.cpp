@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
-#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #include "cbot/delta.h"
 namespace cbot { using namespace cga_impl; }
@@ -31,7 +31,7 @@ public:
         gamma_names[1] = "gamma_2";
         gamma_names[2] = "gamma_3";
 
-        ee_pose_pub = n.advertise<geometry_msgs::Pose>(
+        ee_pose_pub = n.advertise<geometry_msgs::PoseStamped>(
             "ee_pose", 1
         );
     }
@@ -50,10 +50,20 @@ public:
             }
         }
 
+        ROS_INFO("Theta 1 = %f", joints_pos.theta[0]);
+        ROS_INFO("Theta 2 = %f", joints_pos.theta[1]);
+        ROS_INFO("Theta 3 = %f", joints_pos.theta[2]);
+
         // Get the end effector pose and dependent joint values
         cbot::Pose pose;
         cbot::Delta::JointsDep joints_pos_dep;
-        delta.fk_pose(joints_pos, joints_pos_dep, pose);
+        if (!delta.fk_pose(joints_pos, joints_pos_dep, pose)) {
+            ROS_ERROR("Failed to do FK");
+        }
+
+        ROS_INFO("Alpha 1 = %f", joints_pos_dep.alpha[0]);
+        ROS_INFO("Beta 1 = %f", joints_pos_dep.beta[1]);
+        ROS_INFO("Gamma 1 = %f", joints_pos_dep.gamma[2]);
 
         // Copy the joint_states_in message, then append the dependent
         // joints, which shouldn't be present in the original message
@@ -76,7 +86,12 @@ public:
         joint_states.effort.resize(joint_states.name.size());
 
         joint_states_out_pub.publish(joint_states);
-        ee_pose_pub.publish(cbot::to_msg(pose));
+
+        geometry_msgs::PoseStamped pose_msg;
+        pose_msg.pose = cbot::to_msg(pose);
+        pose_msg.header.frame_id="base";
+        pose_msg.header.stamp = joint_states_in.header.stamp;
+        ee_pose_pub.publish(pose_msg);
     }
 
 private:
@@ -99,9 +114,9 @@ int main(int argc, char **argv)
 
     cbot::Delta::Config config;
     n.param("delta/config/base_radius", config.r_base, 0.15);
-    n.param("delta/config/ee_radius", config.r_ee, 0.05);
+    n.param("delta/config/ee_radius", config.r_ee, 0.1);
     n.param("delta/config/upper_length", config.l_upper, 0.3);
-    n.param("delta/config/lower_length", config.l_lower, 0.3);
+    n.param("delta/config/lower_length", config.l_lower, 0.4);
 
     Node node(n, config);
     ros::spin();

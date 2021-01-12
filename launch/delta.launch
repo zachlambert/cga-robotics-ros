@@ -38,7 +38,8 @@
     <node
         pkg="cga_robotics_ros"
         type="delta_fk"
-        name="delta_fk">
+        name="delta_fk"
+        output="screen">
         <remap from="joint_states_in" to="joint_states"/>
         <remap from="joint_states_out" to="joint_states_complete"/>
     </node>
