@@ -18,20 +18,12 @@ public:
 
         std::stringstream ss;
         std::string topic;
-        std::string param;
-        std::string default_value;
         for (int i = 0; i < 3; i++) {
             ss.str("");
-            ss << "delta/controllers/theta_" << (i+1);
-            param = ss.str();
-            ss.str("");
             ss << "theta_" << (i+1) << "_controller/command";
-            default_value = ss.str();
+            topic = ss.str();
             ss.clear();
-            n.param(param, topic, default_value);
-            theta_pub[i] = n.advertise<std_msgs::Float64>(
-                topic, 1
-            );
+            theta_pub[i] = n.advertise<std_msgs::Float64>(topic, 1);
         }
     }
 
@@ -63,10 +55,11 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     cbot::Delta::Config config;
-    n.param("delta/config/base_radius", config.r_base, 0.15);
-    n.param("delta/config/ee_radius", config.r_ee, 0.1);
-    n.param("delta/config/upper_length", config.l_upper, 0.3);
-    n.param("delta/config/lower_length", config.l_lower, 0.4);
+    ros::NodeHandle n_local("~");
+    n_local.getParam("base_radius", config.r_base);
+    n_local.getParam("ee_radius", config.r_ee);
+    n_local.getParam("upper_length", config.l_upper);
+    n_local.getParam("lower_length", config.l_lower);
 
     Node node(n, config);
     ros::spin();

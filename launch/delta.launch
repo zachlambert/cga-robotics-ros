@@ -1,12 +1,16 @@
 <launch>
-    <!-- Load config and robot description -->
+    <arg name="base_radius" default="0.1"/>
+    <arg name="ee_radius" default="0.1"/>
+    <arg name="upper_length" default="0.3"/>
+    <arg name="lower_length" default="0.4"/>
+
     <param
         name="robot_description"
-        command="xacro '$(find cga_robotics_ros)/model/delta/ros.urdf.xacro'"
+        command="xacro '$(find cga_robotics_ros)/model/delta/ros.urdf.xacro' base_radius:=$(arg base_radius) ee_radius:=$(arg ee_radius) upper_length:=$(arg upper_length) lower_length:=$(arg lower_length)"
     />
     <param
         name="robot_description_sdf"
-        command="xacro '$(find cga_robotics_ros)/model/delta/gazebo.sdf.xacro'"
+        command="xacro '$(find cga_robotics_ros)/model/delta/gazebo.sdf.xacro' base_radius:=$(arg base_radius) ee_radius:=$(arg ee_radius) upper_length:=$(arg upper_length) lower_length:=$(arg lower_length)"
     />
 
     <!-- Spawn model in gazebo -->
@@ -42,6 +46,10 @@
         output="screen">
         <remap from="joint_states_in" to="joint_states"/>
         <remap from="joint_states_out" to="joint_states_complete"/>
+        <param name="base_radius" value="$(arg base_radius)"/>
+        <param name="ee_radius" value="$(arg ee_radius)"/>
+        <param name="upper_length" value="$(arg upper_length)"/>
+        <param name="lower_length" value="$(arg lower_length)"/>
     </node>
     <node
         pkg="robot_state_publisher"
@@ -55,8 +63,12 @@
         pkg="cga_robotics_ros"
         type="delta_ik"
         name="delta_ik"
-        output="screen"
-    />
+        output="screen">
+        <param name="base_radius" value="$(arg base_radius)"/>
+        <param name="ee_radius" value="$(arg ee_radius)"/>
+        <param name="upper_length" value="$(arg upper_length)"/>
+        <param name="lower_length" value="$(arg lower_length)"/>
+    </node>
 
     <!-- Start visualisation and rqt for setting ee cmd -->
     <node

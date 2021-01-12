@@ -18,18 +18,21 @@ public:
             "joint_states_out", 1
         );
 
-        n.param("delta/joints/theta_1", theta_names[0], std::string("theta_1"));
-        n.param("delta/joints/theta_2", theta_names[1], std::string("theta_2"));
-        n.param("delta/joints/theta_3", theta_names[2], std::string("theta_3"));
-        n.param("delta/joints/alpha_1", alpha_names[0], std::string("alpha_1"));
-        n.param("delta/joints/alpha_2", alpha_names[1], std::string("alpha_2"));
-        n.param("delta/joints/alpha_3", alpha_names[2], std::string("alpha_3"));
-        n.param("delta/joints/beta_1", beta_names[0], std::string("beta_1"));
-        n.param("delta/joints/beta_2", beta_names[1], std::string("beta_2"));
-        n.param("delta/joints/beta_3", beta_names[2], std::string("beta_3"));
-        n.param("delta/joints/gamma_1", gamma_names[0], std::string("gamma_1"));
-        n.param("delta/joints/gamma_2", gamma_names[1], std::string("gamma_2"));
-        n.param("delta/joints/gamma_3", gamma_names[2], std::string("gamma_3"));
+        std::stringstream ss;
+        for (int i = 0; i < 3; i++) {
+            ss.str("");
+            ss << "theta_" << (i+1);
+            theta_names[i] = ss.str();
+            ss.str("");
+            ss << "alpha_" << (i+1);
+            alpha_names[i] = ss.str();
+            ss.str("");
+            ss << "beta_" << (i+1);
+            beta_names[i] = ss.str();
+            ss.str("");
+            ss << "gamma_" << (i+1);
+            gamma_names[i] = ss.str();
+        }
 
         ee_pose_pub = n.advertise<geometry_msgs::PoseStamped>(
             "ee_pose", 1
@@ -106,10 +109,11 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     cbot::Delta::Config config;
-    n.param("delta/config/base_radius", config.r_base, 0.15);
-    n.param("delta/config/ee_radius", config.r_ee, 0.1);
-    n.param("delta/config/upper_length", config.l_upper, 0.3);
-    n.param("delta/config/lower_length", config.l_lower, 0.4);
+    ros::NodeHandle n_local("~");
+    n_local.getParam("base_radius", config.r_base);
+    n_local.getParam("ee_radius", config.r_ee);
+    n_local.getParam("upper_length", config.l_upper);
+    n_local.getParam("lower_length", config.l_lower);
 
     Node node(n, config);
     ros::spin();

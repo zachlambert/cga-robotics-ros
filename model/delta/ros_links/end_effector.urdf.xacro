@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="delta">
 
-<link name="end_effector">
+<link name="ee">
 <visual>
     <geometry>
         <cylinder
-            length="${end_effector_depth}"
-            radius="${end_effector_radius}"
+            length="${ee_depth}"
+            radius="${ee_radius}"
         />
     </geometry>
     <origin rpy="0 0 0" xyz="0 0 0"/>
-    <material name="end_effector"/>
+    <material name="ee"/>
 </visual>
 <collision>
     <geometry>
         <cylinder
-            length="${end_effector_depth}"
-            radius="${end_effector_radius}"
+            length="${ee_depth}"
+            radius="${ee_radius}"
         />
     </geometry>
     <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -24,44 +24,44 @@
 
 <visual>
     <geometry>
-        <cylinder length="${lower_width}" radius="${end_effector_depth/2}" />
+        <cylinder length="${lower_width}" radius="${ee_depth/2}" />
     </geometry>
-    <origin xyz="${end_effector_radius} 0 0" rpy="0 ${pi/2} ${pi/2}" />
-    <material name="end_effector"/>
+    <origin xyz="${ee_radius} 0 0" rpy="0 ${pi/2} ${pi/2}" />
+    <material name="ee"/>
 </visual>
 <collision>
     <geometry>
-        <cylinder length="${lower_width}" radius="${end_effector_depth/2}" />
+        <cylinder length="${lower_width}" radius="${ee_depth/2}" />
     </geometry>
-    <origin xyz="${end_effector_radius} 0 0" rpy="0 ${pi/2} ${pi/2}" />
+    <origin xyz="${ee_radius} 0 0" rpy="0 ${pi/2} ${pi/2}" />
 </collision>
 
 <visual>
     <geometry>
-        <cylinder length="${lower_width}" radius="${end_effector_depth/2}" />
+        <cylinder length="${lower_width}" radius="${ee_depth/2}" />
     </geometry>
-    <origin xyz="${cos(pi*2/3)*end_effector_radius} ${sin(pi*2/3)*end_effector_radius} 0" rpy="0 ${pi/2} ${pi*7/6}" />
-    <material name="end_effector"/>
+    <origin xyz="${cos(pi*2/3)*ee_radius} ${sin(pi*2/3)*ee_radius} 0" rpy="0 ${pi/2} ${pi*7/6}" />
+    <material name="ee"/>
 </visual>
 <collision>
     <geometry>
-        <cylinder length="${lower_width}" radius="${end_effector_depth/2}" />
+        <cylinder length="${lower_width}" radius="${ee_depth/2}" />
     </geometry>
-    <origin xyz="${cos(pi*2/3)*end_effector_radius} ${sin(pi*2/3)*end_effector_radius} 0" rpy="0 ${pi/2} ${pi*7/6}" />
+    <origin xyz="${cos(pi*2/3)*ee_radius} ${sin(pi*2/3)*ee_radius} 0" rpy="0 ${pi/2} ${pi*7/6}" />
 </collision>
 
 <visual>
     <geometry>
-        <cylinder length="${lower_width}" radius="${end_effector_depth/2}" />
+        <cylinder length="${lower_width}" radius="${ee_depth/2}" />
     </geometry>
-    <origin xyz="${cos(pi*4/3)*end_effector_radius} ${sin(pi*4/3)*end_effector_radius} 0" rpy="0 ${pi/2} ${pi*11/6}" />
-    <material name="end_effector"/>
+    <origin xyz="${cos(pi*4/3)*ee_radius} ${sin(pi*4/3)*ee_radius} 0" rpy="0 ${pi/2} ${pi*11/6}" />
+    <material name="ee"/>
 </visual>
 <collision>
     <geometry>
-        <cylinder length="${lower_width}" radius="${end_effector_depth/2}" />
+        <cylinder length="${lower_width}" radius="${ee_depth/2}" />
     </geometry>
-    <origin xyz="${cos(pi*4/3)*end_effector_radius} ${sin(pi*4/3)*end_effector_radius} 0" rpy="0 ${pi/2} ${pi*11/6}" />
+    <origin xyz="${cos(pi*4/3)*ee_radius} ${sin(pi*4/3)*ee_radius} 0" rpy="0 ${pi/2} ${pi*11/6}" />
 </collision>
 
 </link>

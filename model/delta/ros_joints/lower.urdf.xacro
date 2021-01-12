@@ -64,7 +64,7 @@
 <joint name="lower_end_to_chain_end_${number}" type="fixed">
     <origin
         rpy="0 ${pi} ${number * pi * 2/3}"
-        xyz="${end_effector_radius} 0 0"
+        xyz="${ee_radius} 0 0"
     />
     <parent link="lower_${number}_end"/>
     <child link="chain_${number}_end"/>

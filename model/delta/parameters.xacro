@@ -1,39 +1,43 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="delta_parameters">
 
-<xacro:property name="base_depth" value="0.02"/>
-<xacro:property name="base_radius" value="0.15"/>
+<!-- Properties passed as arguments -->
 
-<xacro:property name="upper_length" value="0.3"/>
+<xacro:arg name="base_radius" default="0.1"/>
+<xacro:property name="base_radius" value="$(arg base_radius)" />
+
+<xacro:arg name="ee_radius" default="0.1"/>
+<xacro:property name="ee_radius" value="$(arg ee_radius)" />
+
+<xacro:arg name="upper_length" default="0.3"/>
+<xacro:property name="upper_length" value="$(arg upper_length)"/>
+
+<xacro:arg name="lower_length" default="0.4"/>
+<xacro:property name="lower_length" value="$(arg lower_length)"/>
+
+<!-- Other properties -->
+
+<xacro:property name="base_depth" value="0.02"/>
 <xacro:property name="upper_radius" value="0.005"/>
 
 <xacro:property name="lower_radius" value="0.005"/>
-<xacro:property name="lower_width" value="0.1"/>
-<xacro:property name="lower_length" value="0.4"/>
+<!-- Use the base radius as a sensible parallel linkage width -->
+<xacro:property name="lower_width" value="${base_radius}"/>
 
-<xacro:property name="end_effector_radius" value="0.1"/>
-<xacro:property name="end_effector_depth" value="0.01"/>
+<xacro:property name="ee_depth" value="0.01"/>
 
 <xacro:property name="base_mass" value="1"/>
 <xacro:property name="upper_mass" value="0.02"/>
 <xacro:property name="lower_mass" value="0.02"/>
-<xacro:property name="end_effector_mass" value="0.05"/>
+<xacro:property name="ee_mass" value="0.05"/>
 
-<xacro:property name="stand_height" value="1.1"/>
-<xacro:property name="stand_radius" value="1.2"/>
-<xacro:property name="stand_leg_width" value="0.1"/>
-<xacro:property name="stand_leg_depth" value="0.05"/>
-<xacro:property name="stand_horizontal_mass" value="0.01"/>
-<xacro:property name="stand_vertical_mass" value="0.01"/>
-<xacro:property name="stand_base_mass" value="1"/>
-<xacro:property name="stand_base_radius" value="0.12"/>
-<xacro:property name="stand_base_height" value="0.12"/>
+<xacro:property name="base_z" value="0.8"/>
 
-<xacro:property name="end_effector_height"
-    value="${stand_height - sqrt(lower_length**2 - (upper_length+base_radius-end_effector_radius)**2)}"
+<xacro:property name="ee_height"
+    value="${base_z - sqrt(lower_length**2 - (upper_length+base_radius-ee_radius)**2)}"
 />
 <xacro:property name="lower_inclination"
-    value="${acos((upper_length+base_radius-end_effector_radius)/lower_length)}"
+    value="${acos((upper_length+base_radius-ee_radius)/lower_length)}"
 />
 
 </robot>
