@@ -13,7 +13,7 @@
     <color rgba="0 1 0 1"/>
 </material>
 
-<material name="end_effector">
+<material name="ee">
     <color rgba="1 0 1 1"/>
 </material>
 

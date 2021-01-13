@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "cbot/delta.h"
-namespace cbot { using namespace cga_impl; }
+namespace cbot { using namespace linalg_impl; }
 
 #include "cbot/conversions.h"
 
