@@ -1,0 +1,47 @@
+<launch>
+    <param
+        name="robot_description"
+        command="xacro '$(find cga_robotics_ros)/model/industrial/ros.urdf.xacro'"
+    />
+
+    <!-- Spawn model in gazebo -->
+    <!-- Don't use gazebo pid gains -->
+    <node
+        name="spawn_model"
+        pkg="gazebo_ros"
+        type="spawn_model"
+        args="-param robot_description -urdf -x 0 -y 0 -z 0 -model industrial -b -gazebo_namespace gzserver"
+    />
+
+    <node
+        pkg="robot_state_publisher"
+        type="robot_state_publisher"
+        name="robot_state_publisher"
+    />
+
+    <!-- Start ros_control -->
+    <rosparam
+        file="$(find cga_robotics_ros)/config/industrial_controllers.yaml"
+        command="load"
+    />
+    <node
+        name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        args="theta_1_controller theta_2_controller theta_3_controller theta_4_controller theta_5_controller theta_6_controller joint_state_controller"
+    />
+
+    <!-- Start visualisation and rqt for setting ee cmd -->
+    <node
+        name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find cga_robotics_ros)/config/view_robot.rviz"
+    />
+    <node
+        name="rqt_gui"
+        pkg="rqt_gui"
+        type="rqt_gui"
+        args="--perspective-file $(find cga_robotics_ros)/config/industrial.perspective"
+    />
+
+</launch>

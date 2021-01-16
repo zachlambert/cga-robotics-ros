@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="delta_materials">
+
+<material name="base">
+    <color rgba="1 0 1 1"/>
+</material>
+
+<material name="arm">
+    <color rgba="0 1 1 1"/>
+</material>
+
+<material name="wrist">
+    <color rgba="1 0 0 1"/>
+</material>
+
+<material name="tool">
+    <color rgba="0 1 0 1"/>
+</material>
+
+</robot>

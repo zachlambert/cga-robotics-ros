@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="industrial">
+
+<xacro:include filename="../macros/inertia.xacro"/>
+<xacro:include filename="parameters.xacro"/>
+<xacro:include filename="materials.urdf.xacro"/>
+
+<xacro:macro name="arm_link" params="name length radius mass material">
+<link name="${name}">
+<inertial>
+    <origin rpy="0 ${pi/2} 0" xyz="${length/2} 0 0"/>
+    <mass value="${mass}"/>
+    <xacro:cylinder_inertia_urdf mass="${mass}" radius="${radius}" length="${length}"/>
+</inertial>
+<visual>
+    <geometry>
+        <cylinder length="${length}" radius="${radius}"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${length/2} 0 0"/>
+    <material name="${material}"/>
+</visual>
+<collision>
+    <geometry>
+        <cylinder length="${length}" radius="${radius}"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${length/2} 0 0"/>
+</collision>
+</link>
+</xacro:macro>
+
+<xacro:macro name="arm_joint" params="name axis distance parent child">
+<joint name="${name}" type="revolute">
+    <axis xyz="${axis}"/>
+    <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="10"/>
+    <origin ryp="0 0 0" xyz="${distance} 0 0"/>
+    <parent link="${parent}"/>
+    <child link="${child}"/>
+</joint>
+<transmission name="${name}_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${name}_actr">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+</xacro:macro>
+
+<gazebo>
+<joint name="world_fix" type="fixed">
+    <pose>0 0 0 0 0 0</pose>
+    <parent>world</parent>
+    <child>base_link</child>
+</joint>
+</gazebo>
+
+<link name="base_link"/>
+<joint name="base_joint" type="fixed">
+    <origin rpy="0 ${-pi/2} 0" xyz="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="fixed_base"/>
+</joint>
+
+<xacro:arm_link name="fixed_base" length="${fixed_base_height}" radius="${fixed_base_radius}" mass="${fixed_base_mass}" material="base"/>
+
+<xacro:arm_joint name="theta_1" axis="1 0 0" distance="${base_height}" parent="fixed_base" child="base"/>
+
+<xacro:arm_link name="base" length="${base_height}" radius="${base_radius}" mass="${base_mass}" material="base"/>
+
+<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height}" parent="base" child="lower"/>
+
+<xacro:arm_link name="lower" length="${lower_length}" radius="${arm_radius}" mass="${lower_mass}" material="arm"/>
+
+<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper"/>
+
+<xacro:arm_link name="upper" length="${upper_length}" radius="${arm_radius}" mass="${upper_mass}" material="arm"/>
+
+<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll"/>
+
+<xacro:arm_link name="wrist_roll" length="${wrist_roll_length}" radius="${wrist_radius}" mass="${wrist_roll_mass}" material="wrist"/>
+
+<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch"/>
+
+<xacro:arm_link name="wrist_pitch" length="${wrist_pitch_length}" radius="${wrist_radius}" mass="${wrist_pitch_mass}" material="wrist"/>
+
+<xacro:arm_joint name="theta_6" axis="1 0 0" distance="${wrist_pitch_length}" parent="wrist_pitch" child="tool_base"/>
+
+<link name="tool_base">
+<inertial>
+    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
+    <mass value="${tool_base_mass}"/>
+    <xacro:box_inertia_urdf mass="${tool_base_mass}" w="0.1" h="0.1" d="0.05"/>
+</inertial>
+<visual>
+    <geometry>
+        <box size="0.1 0.1 0.05"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
+    <material name="tool"/>
+</visual>
+<collision>
+    <geometry>
+        <box size="0.1 0.1 0.05"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
+</collision>
+</link>
+
+<gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+</gazebo>
+
+</robot>

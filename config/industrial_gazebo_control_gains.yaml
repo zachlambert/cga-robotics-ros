@@ -1,0 +1,8 @@
+# gazebo_ros_control:
+#     pid_gains:
+#         theta_1: {p: 400, i: 0, d: 20}
+#         theta_2: {p: 400, i: 0, d: 20}
+#         theta_3: {p: 400, i: 0, d: 20}
+#         theta_4: {p: 400, i: 0, d: 20}
+#         theta_5: {p: 400, i: 0, d: 20}
+#         theta_6: {p: 400, i: 0, d: 20}
