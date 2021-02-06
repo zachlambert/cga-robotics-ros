@@ -3,7 +3,8 @@
 #include <geometry_msgs/PoseStamped.h>
 
 #include "cbot/delta.h"
-namespace cbot { using namespace cga_impl; }
+// namespace cbot { using namespace cga_impl; }
+namespace cbot { using namespace linalg_impl; }
 
 #include "cbot/conversions.h"
 
@@ -55,8 +56,8 @@ public:
 
         // Get the end effector pose and dependent joint values
         cbot::Pose pose;
-        cbot::Delta::JointsDep joints_pos_dep;
-        if (!delta.fk_pose(joints_pos, joints_pos_dep, pose)) {
+        cbot::Delta::JointsDep joints_dep_pos;
+        if (!delta.fk_pose(joints_pos, &joints_dep_pos, pose)) {
             ROS_ERROR("Failed to do FK");
             return;
         }
@@ -68,15 +69,15 @@ public:
 
         for (int i = 0; i < 3; i++) {
             joint_states.name.push_back(alpha_names[i]);
-            joint_states.position.push_back(joints_pos_dep.alpha[i]);
+            joint_states.position.push_back(joints_dep_pos.alpha[i]);
         }
         for (int i = 0; i < 3; i++) {
             joint_states.name.push_back(beta_names[i]);
-            joint_states.position.push_back(joints_pos_dep.beta[i]);
+            joint_states.position.push_back(joints_dep_pos.beta[i]);
         }
         for (int i = 0; i < 3; i++) {
             joint_states.name.push_back(gamma_names[i]);
-            joint_states.position.push_back(joints_pos_dep.gamma[i]);
+            joint_states.position.push_back(joints_dep_pos.gamma[i]);
         }
         joint_states.velocity.resize(joint_states.name.size());
         joint_states.effort.resize(joint_states.name.size());

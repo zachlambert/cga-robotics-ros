@@ -7,7 +7,7 @@
 #include <geometry_msgs/TwistStamped.h>
 
 #include "cbot/delta.h"
-namespace cbot { using namespace cga_impl; }
+namespace cbot { using namespace linalg_impl; }
 
 #include "cbot/conversions.h"
 
@@ -48,6 +48,9 @@ public:
 
         cbot::Twist twist;
         delta.fk_twist(joints_pos, joints_vel, twist);
+        std::cout << twist.linear.x << std::endl;
+        std::cout << twist.linear.y << std::endl;
+        std::cout << twist.linear.z << std::endl;
         geometry_msgs::TwistStamped twist_msg;
         twist_msg.twist = cbot::to_msg(twist);
         twist_msg.header.frame_id = "base";
