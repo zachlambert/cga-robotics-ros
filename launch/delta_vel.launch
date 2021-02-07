@@ -70,6 +70,15 @@
         <param name="lower_length" value="$(arg lower_length)"/>
     </node>
 
+    <!-- Start joint velocity integrator -->
+    <node
+        pkg="cga_robotics_ros"
+        type="joint_velocity_integrator"
+        name="joint_velocity_integrator"
+        output="screen">
+    <param name="joints" value="theta_1 theta_2 theta_3"/>
+    </node>
+
     <!-- Start visualisation and rqt for setting ee cmd -->
     <node
         pkg="cga_robotics_ros"

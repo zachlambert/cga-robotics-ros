@@ -8,9 +8,10 @@
 
 class Node {
 public:
-    Node(ros::NodeHandle &n): joints_pos(N_JOINTS, 0), joints_vel(N_JOINTS, 0)
+    Node(ros::NodeHandle &n, const std::vector<std::string> &joints):
+        N_JOINTS(joints.size()), joints_pos(N_JOINTS, 0), joints_vel(N_JOINTS, 0)
     {
-        theta_vel_sub = n.subscribe(
+        joint_vel_sub = n.subscribe(
             "joint_velocities", 1, &Node::joint_velocities_callback, this
         );
 
@@ -18,12 +19,13 @@ public:
 
         std::stringstream ss;
         std::string topic;
+        joint_pos_pub.resize(N_JOINTS);
         for (int i = 0; i < N_JOINTS; i++) {
             ss.str("");
-            ss << "theta_" << (i+1) << "_controller/command";
+            ss << joints[i] << "_controller/command";
             topic = ss.str();
             ss.clear();
-            theta_pub[i] = n.advertise<std_msgs::Float64>(topic, 1);
+            joint_pos_pub[i] = n.advertise<std_msgs::Float64>(topic, 1);
         }
     }
 
@@ -34,7 +36,7 @@ public:
             joints_pos[i] += joints_vel[i]*dt;
             std_msgs::Float64 msg;
             msg.data = joints_pos[i];
-            theta_pub[i].publish(msg);
+            joint_pos_pub[i].publish(msg);
         }
     }
 
@@ -48,11 +50,11 @@ public:
     }
 
 private:
-    static constexpr std::size_t N_JOINTS = 3;
+    const std::size_t N_JOINTS;
     std::vector<double> joints_pos, joints_vel;
-    ros::Subscriber theta_vel_sub;
+    ros::Subscriber joint_vel_sub;
     ros::Timer loop_timer;
-    ros::Publisher theta_pub[N_JOINTS];
+    std::vector<ros::Publisher> joint_pos_pub;
 };
 
 int main(int argc, char **argv)
@@ -60,12 +62,17 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "joint_velocity_integrator");
     ros::NodeHandle n;
 
-    // ros::NodeHandle n_local("~");
-    // n_local.getParam("base_radius", config.r_base);
-    // n_local.getParam("ee_radius", config.r_ee);
-    // n_local.getParam("upper_length", config.l_upper);
-    // n_local.getParam("lower_length", config.l_lower);
+    ros::NodeHandle n_local("~");
+    std::string joints_string;
+    n_local.getParam("joints", joints_string);
 
-    Node node(n);
+    std::vector<std::string> joints;
+    std::stringstream ss(joints_string);
+    std::string joint;
+    while (ss >> joint) {
+        joints.push_back(joint);
+    }
+
+    Node node(n, joints);
     ros::spin();
 }
