@@ -31,6 +31,7 @@ endfunction()
 add_robot_node(delta fk)
 add_robot_node(delta ik)
 add_robot_node(delta fk_vel)
+add_robot_node(delta ik_vel)
 
 add_executable(joint_velocity_integrator src/joint_velocity_integrator.cpp)
 target_link_libraries(joint_velocity_integrator
