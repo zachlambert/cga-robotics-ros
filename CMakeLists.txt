@@ -21,22 +21,20 @@ include_directories(
     include
 )
 
-add_executable(delta_fk src/delta/fk.cpp)
-target_link_libraries(delta_fk
-    ${catkin_LIBRARIES}
-    cbot
-)
+function(add_robot_node robot node)
+    add_executable(${robot}_${node}
+        src/${robot}/${node}.cpp
+    )
+    target_link_libraries(${robot}_${node} ${catkin_LIBRARIES} cbot)
+endfunction()
 
-add_executable(delta_ik src/delta/ik.cpp)
-target_link_libraries(delta_ik
-    ${catkin_LIBRARIES}
-    cbot
-)
+add_robot_node(delta fk)
+add_robot_node(delta ik)
+add_robot_node(delta fk_vel)
 
-add_executable(delta_fk_vel src/delta/fk_vel.cpp)
-target_link_libraries(delta_fk_vel
+add_executable(joint_velocity_integrator src/joint_velocity_integrator.cpp)
+target_link_libraries(joint_velocity_integrator
     ${catkin_LIBRARIES}
-    cbot
 )
 
 add_executable(twist_marker src/twist_marker.cpp)
