@@ -4,14 +4,27 @@ add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
     roscpp
+    std_msgs
+    geometry_msgs
+    sensor_msgs
+    message_generation
 )
 
 find_package(cbot REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+add_service_files(
+    FILES
+        RobotCommand.srv
+)
+generate_messages(DEPENDENCIES std_msgs geometry_msgs)
+
 catkin_package(
     CATKIN_DEPENDS
         roscpp
+        std_msgs
+        geometry_msgs
+        sensor_msgs
     DEPENDS
         EIGEN3
 )
@@ -21,22 +34,28 @@ include_directories(
     include
 )
 
-function(add_robot_node robot node)
-    add_executable(${robot}_${node}
-        src/${robot}/${node}.cpp
-    )
-    target_link_libraries(${robot}_${node} ${catkin_LIBRARIES} cbot)
-endfunction()
+# function(add_robot_node robot node)
+#     add_executable(${robot}_${node}
+#         src/${robot}/${node}.cpp
+#     )
+#     target_link_libraries(${robot}_${node} ${catkin_LIBRARIES} cbot)
+# endfunction()
+# 
+# add_robot_node(delta fk)
+# add_robot_node(delta ik)
+# add_robot_node(delta fk_vel)
+# add_robot_node(delta ik_vel)
+# 
+# add_executable(joint_velocity_integrator src/joint_velocity_integrator.cpp)
+# target_link_libraries(joint_velocity_integrator
+#     ${catkin_LIBRARIES}
+# )
 
-add_robot_node(delta fk)
-add_robot_node(delta ik)
-add_robot_node(delta fk_vel)
-add_robot_node(delta ik_vel)
-
-add_executable(joint_velocity_integrator src/joint_velocity_integrator.cpp)
-target_link_libraries(joint_velocity_integrator
-    ${catkin_LIBRARIES}
+add_executable(delta_controller
+    src/delta/controller.cpp
+    src/joint_publisher.cpp
 )
+target_link_libraries(delta_controller ${catkin_LIBRARIES} cbot)
 
 add_executable(twist_marker src/twist_marker.cpp)
 target_link_libraries(twist_marker

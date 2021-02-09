@@ -6,9 +6,14 @@
   <maintainer email="zachalambert@gmail.com">Zach Lambert</maintainer>
   <license>TODO</license>
 
-  <depend>roscpp</depend>
-
   <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
 
   <export>
   </export>
