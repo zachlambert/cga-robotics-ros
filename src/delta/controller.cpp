@@ -23,21 +23,17 @@ enum class ControlMode {
 
 class Node {
 public:
-    Node(ros::NodeHandle &n, cbot::Delta::Config config):
-        delta(config),
+    Node(
+        ros::NodeHandle &n,
+        const cbot::Delta::Dimensions &dim,
+        const cbot::Delta::JointNames &joint_names):
+        delta(dim, joint_names),
+        joint_publisher(n, delta.get_independent_joint_names()),
         trajectory_server(
             n, "trajectory",
             boost::bind(&Node::trajectory_callback, this, _1),
             false)
     {
-        joint_names.push_back("theta_1");
-        joint_names.push_back("theta_2");
-        joint_names.push_back("theta_3");
-
-        joint_publisher = std::unique_ptr<JointPublisher>(
-            new JointPublisher(n, joint_names)
-        );
-
         ee_twist_cmd_sub = n.subscribe(
             "ee_twist_sub", 1, &Node::ee_twist_cmd_callback, this
         );
@@ -84,7 +80,7 @@ public:
         delta.calculate_trajectory(pose_goal, time, trajectory);
 
         trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(trajectory);
-        joint_publisher->load_trajectory(trajectory_msg);
+        joint_publisher.load_trajectory(trajectory_msg);
     }
 
     void ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee_twist_cmd)
@@ -95,34 +91,34 @@ public:
     void loop(const ros::TimerEvent &timer)
     {
         if (control_mode == ControlMode::VELOCITY) {
-            for (std::size_t i = 0; i < joint_publisher->joints.size(); i++) {
+            for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
                 delta.set_joint_position(
-                    joint_publisher->joints[i],
-                    joint_publisher->joint_positions[i]
+                    joint_publisher.joints[i],
+                    joint_publisher.joint_positions[i]
                 );
             }
             delta.set_twist(ee_twist_cmd);
             delta.update_joint_velocities();
 
-            std::vector<double> joint_velocities(joint_publisher->joints.size());
-            for (std::size_t i = 0; i < joint_publisher->joints.size(); i++) {
+            std::vector<double> joint_velocities(joint_publisher.joints.size());
+            for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
                 joint_velocities[i] = delta.get_joints().at(
-                    joint_publisher->joints[i]).velocity;
+                    joint_publisher.joints[i]).velocity;
             }
-            joint_publisher->set_joint_velocities(joint_velocities);
+            joint_publisher.set_joint_velocities(joint_velocities);
         }
 
-        joint_publisher->loop(timer);
+        joint_publisher.loop(timer);
 
         if (control_mode == ControlMode::TRAJECTORY) {
             if (trajectory_server.isPreemptRequested()) {
-                joint_publisher->stop_trajectory();
+                joint_publisher.stop_trajectory();
                 control_mode = ControlMode::VELOCITY;
                 trajectory_server.setPreempted();
                 return;
             }
-            bool active = joint_publisher->get_trajectory_status().active;
-            double progress = joint_publisher->get_trajectory_status().progress;
+            bool active = joint_publisher.get_trajectory_status().active;
+            double progress = joint_publisher.get_trajectory_status().progress;
             if (!active) {
                 trajectory_server.setSucceeded();
             } else {
@@ -135,8 +131,7 @@ public:
 
 private:
     cbot::Delta delta;
-    std::vector<std::string> joint_names;
-    std::unique_ptr<JointPublisher> joint_publisher;
+    JointPublisher joint_publisher;
     ControlMode control_mode;
 
     ros::ServiceServer pose_command_server;
@@ -154,13 +149,28 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "delta_fk");
     ros::NodeHandle n;
 
-    cbot::Delta::Config config;
+    cbot::Delta::Dimensions dim;
     ros::NodeHandle n_local("~");
-    n_local.getParam("base_radius", config.r_base);
-    n_local.getParam("ee_radius", config.r_ee);
-    n_local.getParam("upper_length", config.l_upper);
-    n_local.getParam("lower_length", config.l_lower);
+    n_local.getParam("base_radius", dim.r_base);
+    n_local.getParam("ee_radius", dim.r_ee);
+    n_local.getParam("upper_length", dim.l_upper);
+    n_local.getParam("lower_length", dim.l_lower);
 
-    Node node(n, config);
+    cbot::Delta::JointNames joint_names;
+    // TODO: Tidy this up
+    joint_names.theta.push_back("theta_1");
+    joint_names.theta.push_back("theta_2");
+    joint_names.theta.push_back("theta_3");
+    joint_names.alpha.push_back("alpha_1");
+    joint_names.alpha.push_back("alpha_2");
+    joint_names.alpha.push_back("alpha_3");
+    joint_names.beta.push_back("beta_1");
+    joint_names.beta.push_back("beta_2");
+    joint_names.beta.push_back("beta_3");
+    joint_names.gamma.push_back("gamma_1");
+    joint_names.gamma.push_back("gamma_2");
+    joint_names.gamma.push_back("gamma_3");
+
+    Node node(n, dim, joint_names);
     ros::spin();
 }

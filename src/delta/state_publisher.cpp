@@ -9,7 +9,11 @@
 
 class Node {
 public:
-    Node(ros::NodeHandle &n, cbot::Delta::Config config): delta(config)
+    Node(
+        ros::NodeHandle &n,
+        const cbot::Delta::Dimensions &dim,
+        const cbot::Delta::JointNames &joint_names):
+        delta(dim, joint_names)
     {
         joint_states_in_sub = n.subscribe(
             "joint_states_in", 1, &Node::joint_states_callback, this
@@ -31,7 +35,7 @@ public:
         for (std::size_t i = 0; i < joint_states_in.name.size(); i++) {
             // If the delta model doesn't use a joint provided, it is ignored
             delta.set_joint_position(joint_states_in.name[i], joint_states_in.position[i]);
-            delta.set_joint_position(joint_states_in.name[i], joint_states_in.velocity[i]);
+            delta.set_joint_velocity(joint_states_in.name[i], joint_states_in.velocity[i]);
         }
 
         if (!delta.update_pose()) {
@@ -87,13 +91,28 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "delta_fk");
     ros::NodeHandle n;
 
-    cbot::Delta::Config config;
+    cbot::Delta::Dimensions dim;
     ros::NodeHandle n_local("~");
-    n_local.getParam("base_radius", config.r_base);
-    n_local.getParam("ee_radius", config.r_ee);
-    n_local.getParam("upper_length", config.l_upper);
-    n_local.getParam("lower_length", config.l_lower);
+    n_local.getParam("base_radius", dim.r_base);
+    n_local.getParam("ee_radius", dim.r_ee);
+    n_local.getParam("upper_length", dim.l_upper);
+    n_local.getParam("lower_length", dim.l_lower);
 
-    Node node(n, config);
+    cbot::Delta::JointNames joint_names;
+    // TODO: Tidy this up
+    joint_names.theta.push_back("theta_1");
+    joint_names.theta.push_back("theta_2");
+    joint_names.theta.push_back("theta_3");
+    joint_names.alpha.push_back("alpha_1");
+    joint_names.alpha.push_back("alpha_2");
+    joint_names.alpha.push_back("alpha_3");
+    joint_names.beta.push_back("beta_1");
+    joint_names.beta.push_back("beta_2");
+    joint_names.beta.push_back("beta_3");
+    joint_names.gamma.push_back("gamma_1");
+    joint_names.gamma.push_back("gamma_2");
+    joint_names.gamma.push_back("gamma_3");
+
+    Node node(n, dim, joint_names);
     ros::spin();
 }

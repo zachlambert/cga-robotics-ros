@@ -1,4 +1,6 @@
 <launch>
+    <!-- Set robot dimensions and load urdf and sdf -->
+
     <arg name="base_radius" default="0.1"/>
     <arg name="ee_radius" default="0.1"/>
     <arg name="upper_length" default="0.3"/>
@@ -14,6 +16,7 @@
     />
 
     <!-- Spawn model in gazebo -->
+
     <rosparam
         file="$(find cga_robotics_ros)/config/delta_gazebo_control_gains.yaml"
         command="load"
@@ -26,6 +29,7 @@
     />
 
     <!-- Start ros_control -->
+
     <rosparam
         file="$(find cga_robotics_ros)/config/delta_controllers.yaml"
         command="load"
@@ -36,50 +40,6 @@
         type="spawner"
         respawn="false"
         args="theta_1_controller theta_2_controller theta_3_controller joint_state_controller"
-    />
-
-    <!-- Start FK node and robot state publisher -->
-    <node
-        pkg="cga_robotics_ros"
-        type="delta_fk"
-        name="delta_fk"
-        output="screen">
-        <remap from="joint_states_in" to="joint_states"/>
-        <remap from="joint_states_out" to="joint_states_complete"/>
-        <param name="base_radius" value="$(arg base_radius)"/>
-        <param name="ee_radius" value="$(arg ee_radius)"/>
-        <param name="upper_length" value="$(arg upper_length)"/>
-        <param name="lower_length" value="$(arg lower_length)"/>
-    </node>
-    <node
-        pkg="robot_state_publisher"
-        type="robot_state_publisher"
-        name="robot_state_publisher">
-        <remap from="joint_states" to="joint_states_complete"/>
-    </node>
-
-    <!-- Start IK node -->
-    <node
-        pkg="cga_robotics_ros"
-        type="delta_ik"
-        name="delta_ik"
-        output="screen">
-        <param name="base_radius" value="$(arg base_radius)"/>
-        <param name="ee_radius" value="$(arg ee_radius)"/>
-        <param name="upper_length" value="$(arg upper_length)"/>
-        <param name="lower_length" value="$(arg lower_length)"/>
-    </node>
-
-    <!-- Start visualisation and rqt for setting ee cmd -->
-    <node
-        name="rviz" pkg="rviz" type="rviz"
-        args="-d $(find cga_robotics_ros)/config/view_robot.rviz"
-    />
-    <node
-        name="rqt_gui"
-        pkg="rqt_gui"
-        type="rqt_gui"
-        args="--perspective-file $(find cga_robotics_ros)/config/delta.perspective"
     />
 
 </launch>

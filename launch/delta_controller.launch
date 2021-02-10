@@ -1,0 +1,31 @@
+<launch>
+    <arg name="base_radius" default="0.1"/>
+    <arg name="ee_radius" default="0.1"/>
+    <arg name="upper_length" default="0.3"/>
+    <arg name="lower_length" default="0.4"/>
+
+    <node
+        pkg="cga_robotics_ros"
+        type="delta_controller"
+        name="delta_controller"
+        output="screen">
+        <param name="base_radius" value="$(arg base_radius)"/>
+        <param name="ee_radius" value="$(arg ee_radius)"/>
+        <param name="upper_length" value="$(arg upper_length)"/>
+        <param name="lower_length" value="$(arg lower_length)"/>
+    </node>
+
+    <!--<node
+        pkg="cga_robotics_ros"
+        type="commander"
+        name="commander"
+        output="screen"
+    />-->
+
+    <node
+        pkg="joy"
+        type="joy_node"
+        name="joy_node"
+    />
+
+</launch>

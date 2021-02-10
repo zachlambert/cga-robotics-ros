@@ -1,0 +1,32 @@
+<launch>
+    <arg name="base_radius" default="0.1"/>
+    <arg name="ee_radius" default="0.1"/>
+    <arg name="upper_length" default="0.3"/>
+    <arg name="lower_length" default="0.4"/>
+
+    <node
+        pkg="cga_robotics_ros"
+        type="delta_state_publisher"
+        name="delta_state_publisher"
+        output="screen">
+        <remap from="joint_states_in" to="joint_states"/>
+        <remap from="joint_states_out" to="joint_states_complete"/>
+        <param name="base_radius" value="$(arg base_radius)"/>
+        <param name="ee_radius" value="$(arg ee_radius)"/>
+        <param name="upper_length" value="$(arg upper_length)"/>
+        <param name="lower_length" value="$(arg lower_length)"/>
+    </node>
+    <node
+        pkg="robot_state_publisher"
+        type="robot_state_publisher"
+        name="robot_state_publisher">
+        <remap from="joint_states" to="joint_states_complete"/>
+    </node>
+
+    <node
+        pkg="cga_robotics_ros"
+        type="twist_marker"
+        name="twist_marker"
+    />
+
+</launch>
