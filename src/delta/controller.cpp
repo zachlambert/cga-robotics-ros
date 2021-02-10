@@ -77,7 +77,7 @@ public:
 
     void trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
     {
-        cbot::Pose pose_goal = cbot::from_msg(goal->pose.pose);
+        cbot::Pose pose_goal = cbot::from_msg(goal->pose);
         double time = goal->time;
 
         cbot::JointTrajectory trajectory;

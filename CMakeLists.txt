@@ -68,4 +68,10 @@ target_include_directories(twist_marker
     PRIVATE ${EIGEN3_INCLUDE_DIRS}
 )
 
-# Todo: Commander
+add_executable(commander
+    src/commander.cpp
+    src/joystick_listener.cpp
+)
+target_link_libraries(commander
+    ${catkin_LIBRARIES}
+)
