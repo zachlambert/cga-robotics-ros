@@ -4,130 +4,116 @@
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <trajectory_msgs/JointTrajectory.h>
 
 #include "cbot/delta.h"
 // namespace cbot { using namespace cga_impl; }
 namespace cbot { using namespace linalg_impl; }
 
-#include "cga_robotics_ros/RobotCommand.h"
+#include "cga_robotics_ros/PoseCommand.h"
+#include "cga_robotics_ros/VelocityCommand.h"
 #include "cbot/conversions.h"
 #include "joint_publisher.h"
+
+enum class ControlMode {
+    VELOCITY,
+    TRAJECTORY
+};
 
 class Node {
 public:
     Node(ros::NodeHandle &n, cbot::Delta::Config config): delta(config)
     {
-        joint_states_in_sub = n.subscribe(
-            "joint_states_in", 1, &Node::joint_states_callback, this
-        );
-        joint_states_out_pub = n.advertise<sensor_msgs::JointState>(
-            "joint_states_out", 1
-        );
+        joint_names.push_back("theta_1");
+        joint_names.push_back("theta_2");
+        joint_names.push_back("theta_3");
 
-        std::stringstream ss;
-        theta_names.resize(3);
-        alpha_names.resize(3);
-        beta_names.resize(3);
-        gamma_names.resize(3);
-        for (int i = 0; i < 3; i++) {
-            ss.str("");
-            ss << "theta_" << (i+1);
-            theta_names[i] = ss.str();
-            ss.str("");
-            ss << "alpha_" << (i+1);
-            alpha_names[i] = ss.str();
-            ss.str("");
-            ss << "beta_" << (i+1);
-            beta_names[i] = ss.str();
-            ss.str("");
-            ss << "gamma_" << (i+1);
-            gamma_names[i] = ss.str();
-        }
-
-        joint_publisher = std::unique_ptr<JointPublisher>(new JointPublisher(n, theta_names));
-
-        ee_pose_pub = n.advertise<geometry_msgs::PoseStamped>(
-            "ee_pose", 1
+        joint_publisher = std::unique_ptr<JointPublisher>(
+            new JointPublisher(n, joint_names)
         );
 
-        robot_command_server = n.advertiseService(
-            "robot_command", &Node::robot_command_callback, this
+        ee_twist_cmd_sub = n.subscribe(
+            "ee_twist_sub", 1, &Node::ee_twist_cmd_callback, this
+        );
+
+        pose_command_server = n.advertiseService(
+            "robot_command", &Node::pose_command_callback, this
+        );
+
+        velocity_command_server = n.advertiseService(
+            "velocity_command", &Node::velocity_command_callback, this
+        );
+
+        loop_timer = n.createTimer(
+            ros::Duration(1.0/20),
+            &Node::loop,
+            this
         );
     }
 
-    void joint_states_callback(const sensor_msgs::JointState &joint_states_in)
+    bool pose_command_callback(
+        cga_robotics_ros::PoseCommand::Request &req,
+        cga_robotics_ros::PoseCommand::Request &res)
     {
-        // Read theta joints in. Don't rely on the joints being provided
-        // in any specific order, so have to search joint names.
-        cbot::Delta::Joints joints_pos;
-        for (int i = 0; i < 3; i++) {
-            for (std::size_t j = 0; j < joint_states_in.name.size(); j++) {
-                if (theta_names[i] == joint_states_in.name[j]) {
-                    joints_pos.theta[i] = joint_states_in.position[j];
-                    break;
-                }
-            }
-        }
+        cbot::Pose goal = cbot::from_msg(req.goal.pose);
+        double time = req.time.data;
+        cbot::JointTrajectory trajectory;
+        delta.calculate_trajectory(goal, time, trajectory);
 
-        // Get the end effector pose and dependent joint values
-        cbot::Pose pose;
-        cbot::Delta::JointsDep joints_dep_pos;
-        if (!delta.fk_pose(joints_pos, &joints_dep_pos, pose)) {
-            ROS_ERROR("Failed to do FK");
-            return;
-        }
+        trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(trajectory);
+        joint_publisher->load_trajectory(trajectory_msg);
 
-        // Copy the joint_states_in message, then append the dependent
-        // joints, which shouldn't be present in the original message
-
-        sensor_msgs::JointState joint_states(joint_states_in);
-
-        for (int i = 0; i < 3; i++) {
-            joint_states.name.push_back(alpha_names[i]);
-            joint_states.position.push_back(joints_dep_pos.alpha[i]);
-        }
-        for (int i = 0; i < 3; i++) {
-            joint_states.name.push_back(beta_names[i]);
-            joint_states.position.push_back(joints_dep_pos.beta[i]);
-        }
-        for (int i = 0; i < 3; i++) {
-            joint_states.name.push_back(gamma_names[i]);
-            joint_states.position.push_back(joints_dep_pos.gamma[i]);
-        }
-        joint_states.velocity.resize(joint_states.name.size());
-        joint_states.effort.resize(joint_states.name.size());
-
-        joint_states_out_pub.publish(joint_states);
-
-        geometry_msgs::PoseStamped pose_msg;
-        pose_msg.pose = cbot::to_msg(pose);
-        pose_msg.header.frame_id="base";
-        pose_msg.header.stamp = joint_states_in.header.stamp;
-        ee_pose_pub.publish(pose_msg);
-    }
-
-    bool robot_command_callback(
-        cga_robotics_ros::RobotCommand::Request &req,
-        cga_robotics_ros::RobotCommand::Request &res)
-    {
         return true;
+    }
+
+    bool velocity_command_callback(
+        cga_robotics_ros::VelocityCommand::Request &req,
+        cga_robotics_ros::VelocityCommand::Request &res)
+    {
+        control_mode = ControlMode::VELOCITY;
+        return true;
+    }
+
+    void ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee_twist_cmd)
+    {
+        this->ee_twist_cmd = cbot::from_msg(ee_twist_cmd.twist);
+    }
+
+    void loop(const ros::TimerEvent &timer)
+    {
+        if (control_mode == ControlMode::VELOCITY) {
+            for (std::size_t i = 0; i < joint_publisher->joints.size(); i++) {
+                delta.set_joint_position(
+                    joint_publisher->joints[i],
+                    joint_publisher->joint_positions[i]
+                );
+            }
+            delta.set_twist(ee_twist_cmd);
+            delta.update_joint_velocities();
+
+            std::vector<double> joint_velocities(joint_publisher->joints.size());
+            for (std::size_t i = 0; i < joint_publisher->joints.size(); i++) {
+                joint_velocities[i] = delta.get_joints().at(
+                    joint_publisher->joints[i]).velocity;
+            }
+            joint_publisher->set_joint_velocities(joint_velocities);
+        }
+        joint_publisher->loop(timer);
     }
 
 private:
     cbot::Delta delta;
+    std::vector<std::string> joint_names;
     std::unique_ptr<JointPublisher> joint_publisher;
+    ControlMode control_mode;
 
-    ros::Subscriber joint_states_in_sub;
-    ros::Subscriber ee_twist_sub;
-    ros::Publisher joint_states_out_pub;
-    ros::Publisher ee_pose_pub;
+    ros::ServiceServer pose_command_server;
+    ros::ServiceServer velocity_command_server;
 
-    ros::ServiceServer robot_command_server;
+    ros::Subscriber ee_twist_cmd_sub;
+    cbot::Twist ee_twist_cmd;
 
-    std::vector<std::string> theta_names;
-    std::vector<std::string> alpha_names;
-    std::vector<std::string> beta_names;
-    std::vector<std::string> gamma_names;
+    ros::Timer loop_timer;
 };
 
 int main(int argc, char **argv)

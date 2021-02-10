@@ -15,7 +15,8 @@ find_package(Eigen3 REQUIRED)
 
 add_service_files(
     FILES
-        RobotCommand.srv
+        PoseCommand.srv
+        VelocityCommand.srv
 )
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 

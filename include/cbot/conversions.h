@@ -4,6 +4,7 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Wrench.h>
+#include <trajectory_msgs/JointTrajectory.h>
 #include "cbot/types.h"
 
 namespace cbot {
@@ -81,6 +82,35 @@ Wrench from_msg(const geometry_msgs::Wrench &msg)
     wrench.torque.z = msg.torque.z;
     return wrench;
 }
-};
+
+trajectory_msgs::JointTrajectory to_msg(const JointTrajectory &trajectory)
+{
+    trajectory_msgs::JointTrajectory msg;
+    msg.joint_names = trajectory.names;
+    msg.header.stamp = ros::Time::now();
+    msg.points = std::vector<trajectory_msgs::JointTrajectoryPoint>(trajectory.points.size());
+    for (std::size_t i = 0; i < msg.points.size(); i++) {
+        msg.points[i].positions = trajectory.points[i].positions;
+        msg.points[i].velocities.resize(3, 0.0);
+        msg.points[i].accelerations.resize(3, 0.0);
+        msg.points[i].effort.resize(3, 0.0);
+        msg.points[i].time_from_start = ros::Duration(trajectory.points[i].time);
+    }
+    return msg;
+}
+
+JointTrajectory from_msg(const trajectory_msgs::JointTrajectory &msg)
+{
+    JointTrajectory trajectory;
+    trajectory.names = msg.joint_names;
+    trajectory.points = std::vector<JointTrajectoryPoint>(msg.points.size());
+    for (std::size_t i = 0; i < trajectory.points.size(); i++) {
+        trajectory.points[i].positions = msg.points[i].positions;
+        trajectory.points[i].time = msg.points[i].time_from_start.toSec();
+    }
+    return trajectory;
+}
+
+} // namespace cbot
 
 #endif
