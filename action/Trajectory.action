@@ -1,0 +1,6 @@
+geometry_msgs/PoseStamped goal
+float64 time
+---
+bool success
+---
+float64 progress

@@ -7,6 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     geometry_msgs
     sensor_msgs
+    actionlib
+    actionlib_msgs
     message_generation
 )
 
@@ -18,7 +20,14 @@ add_service_files(
         PoseCommand.srv
         VelocityCommand.srv
 )
-generate_messages(DEPENDENCIES std_msgs geometry_msgs)
+add_action_files(
+    DIRECTORY action
+    FILES
+        Trajectory.action
+)
+generate_messages(DEPENDENCIES
+    std_msgs geometry_msgs actionlib_msgs
+)
 
 catkin_package(
     CATKIN_DEPENDS
