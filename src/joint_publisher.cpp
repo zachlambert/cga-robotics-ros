@@ -10,7 +10,7 @@
 
 
 JointPublisher::JointPublisher(ros::NodeHandle &n, const std::vector<std::string> &joints):
-    mode(Mode::VELOCITY),
+    mode(Mode::INACTIVE),
     joints(joints),
     joint_positions(joints.size(), 0),
     joint_velocities(joints.size(), 0)
@@ -27,6 +27,9 @@ JointPublisher::JointPublisher(ros::NodeHandle &n, const std::vector<std::string
     }
 
     trajectory.joint_names = joints;
+
+    trajectory_status.active = false;
+    trajectory_status.progress = 0;
 }
 
 void JointPublisher::set_joint_velocities(const std::vector<double> &joint_velocities_in)
@@ -45,6 +48,9 @@ void JointPublisher::load_trajectory(const trajectory_msgs::JointTrajectory &tra
     // positions after checking the index mapping
 
     mode = Mode::TRAJECTORY;
+    trajectory_status.active = true;
+    trajectory_status.progress = 0;
+
     trajectory.header.stamp = ros::Time::now();
     trajectory.points.resize(trajectory_in.points.size());
 
@@ -66,6 +72,11 @@ void JointPublisher::load_trajectory(const trajectory_msgs::JointTrajectory &tra
     }
 }
 
+void JointPublisher::stop_trajectory() {
+    trajectory_status.active = false;
+    mode = Mode::INACTIVE;
+}
+
 void JointPublisher::loop(const ros::TimerEvent &timer)
 {
     if (mode == Mode::VELOCITY) {
@@ -79,8 +90,16 @@ void JointPublisher::loop(const ros::TimerEvent &timer)
         double u = t / trajectory.points.rbegin()->time_from_start.toSec();
         std::size_t n = u * trajectory.points.size();
         if (n < 0) n = 0;
-        if (n >= trajectory.points.size()) n = trajectory.points.size() - 1;
+        if (n >= trajectory.points.size()) {
+            n = trajectory.points.size() - 1;
+        }
         joint_positions = trajectory.points[n].positions;
+
+        trajectory_status.progress = u;
+        if (t > trajectory.points.rbegin()->time_from_start.toSec()) {
+            mode = Mode::INACTIVE;
+            trajectory_status.active = false;
+        }
     }
 
     for (std::size_t i = 0; i < joints.size(); i++) {
@@ -89,4 +108,3 @@ void JointPublisher::loop(const ros::TimerEvent &timer)
         joint_positions_pub[i].publish(msg);
     }
 }
-

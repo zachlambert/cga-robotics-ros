@@ -5,11 +5,14 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <trajectory_msgs/JointTrajectory.h>
+#include <actionlib/server/simple_action_server.h>
 
 #include "cbot/delta.h"
 
-#include "cga_robotics_ros/PoseCommand.h"
-#include "cga_robotics_ros/VelocityCommand.h"
+#include <cga_robotics_ros/PoseCommand.h>
+#include <cga_robotics_ros/VelocityCommand.h>
+#include <cga_robotics_ros/TrajectoryAction.h>
+
 #include "cbot/conversions.h"
 #include "joint_publisher.h"
 
@@ -20,7 +23,12 @@ enum class ControlMode {
 
 class Node {
 public:
-    Node(ros::NodeHandle &n, cbot::Delta::Config config): delta(config)
+    Node(ros::NodeHandle &n, cbot::Delta::Config config):
+        delta(config),
+        trajectory_server(
+            n, "trajectory",
+            boost::bind(&Node::trajectory_callback, this, _1),
+            false)
     {
         joint_names.push_back("theta_1");
         joint_names.push_back("theta_2");
@@ -47,20 +55,15 @@ public:
             &Node::loop,
             this
         );
+
+        trajectory_server.start();
     }
 
     bool pose_command_callback(
         cga_robotics_ros::PoseCommand::Request &req,
         cga_robotics_ros::PoseCommand::Request &res)
     {
-        cbot::Pose goal = cbot::from_msg(req.goal.pose);
-        double time = req.time.data;
-        cbot::JointTrajectory trajectory;
-        delta.calculate_trajectory(goal, time, trajectory);
-
-        trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(trajectory);
-        joint_publisher->load_trajectory(trajectory_msg);
-
+        // TODO: Remove this
         return true;
     }
 
@@ -70,6 +73,18 @@ public:
     {
         control_mode = ControlMode::VELOCITY;
         return true;
+    }
+
+    void trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
+    {
+        cbot::Pose pose_goal = cbot::from_msg(goal->pose.pose);
+        double time = goal->time;
+
+        cbot::JointTrajectory trajectory;
+        delta.calculate_trajectory(pose_goal, time, trajectory);
+
+        trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(trajectory);
+        joint_publisher->load_trajectory(trajectory_msg);
     }
 
     void ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee_twist_cmd)
@@ -96,7 +111,26 @@ public:
             }
             joint_publisher->set_joint_velocities(joint_velocities);
         }
+
         joint_publisher->loop(timer);
+
+        if (control_mode == ControlMode::TRAJECTORY) {
+            if (trajectory_server.isPreemptRequested()) {
+                joint_publisher->stop_trajectory();
+                control_mode = ControlMode::VELOCITY;
+                trajectory_server.setPreempted();
+                return;
+            }
+            bool active = joint_publisher->get_trajectory_status().active;
+            double progress = joint_publisher->get_trajectory_status().progress;
+            if (!active) {
+                trajectory_server.setSucceeded();
+            } else {
+                cga_robotics_ros::TrajectoryFeedback trajectory_feedback;
+                trajectory_feedback.progress = progress;
+                trajectory_server.publishFeedback(trajectory_feedback);
+            }
+        }
     }
 
 private:
@@ -107,6 +141,7 @@ private:
 
     ros::ServiceServer pose_command_server;
     ros::ServiceServer velocity_command_server;
+    actionlib::SimpleActionServer<cga_robotics_ros::TrajectoryAction> trajectory_server;
 
     ros::Subscriber ee_twist_cmd_sub;
     cbot::Twist ee_twist_cmd;

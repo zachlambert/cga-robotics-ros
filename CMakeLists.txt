@@ -51,6 +51,7 @@ add_executable(delta_controller
     src/joint_publisher.cpp
 )
 target_link_libraries(delta_controller ${catkin_LIBRARIES} cbot)
+add_dependencies(delta_controller ${cga_robotics_ros_EXPORTED_TARGETS})
 
 add_executable(delta_state_publisher
     src/delta/state_publisher.cpp
