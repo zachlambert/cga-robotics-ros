@@ -35,28 +35,20 @@ include_directories(
     include
 )
 
-# function(add_robot_node robot node)
-#     add_executable(${robot}_${node}
-#         src/${robot}/${node}.cpp
-#     )
-#     target_link_libraries(${robot}_${node} ${catkin_LIBRARIES} cbot)
-# endfunction()
-# 
-# add_robot_node(delta fk)
-# add_robot_node(delta ik)
-# add_robot_node(delta fk_vel)
-# add_robot_node(delta ik_vel)
-# 
-# add_executable(joint_velocity_integrator src/joint_velocity_integrator.cpp)
-# target_link_libraries(joint_velocity_integrator
-#     ${catkin_LIBRARIES}
-# )
+# DELTA
 
 add_executable(delta_controller
     src/delta/controller.cpp
     src/joint_publisher.cpp
 )
 target_link_libraries(delta_controller ${catkin_LIBRARIES} cbot)
+
+add_executable(delta_state_publisher
+    src/delta/state_publisher.cpp
+)
+target_link_libraries(delta_state_publisher ${catkin_LIBRARIES} cbot)
+
+# GENERAL
 
 add_executable(twist_marker src/twist_marker.cpp)
 target_link_libraries(twist_marker
@@ -65,3 +57,5 @@ target_link_libraries(twist_marker
 target_include_directories(twist_marker
     PRIVATE ${EIGEN3_INCLUDE_DIRS}
 )
+
+# Todo: Commander

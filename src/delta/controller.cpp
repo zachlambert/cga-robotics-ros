@@ -7,8 +7,6 @@
 #include <trajectory_msgs/JointTrajectory.h>
 
 #include "cbot/delta.h"
-// namespace cbot { using namespace cga_impl; }
-namespace cbot { using namespace linalg_impl; }
 
 #include "cga_robotics_ros/PoseCommand.h"
 #include "cga_robotics_ros/VelocityCommand.h"
