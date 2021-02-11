@@ -52,6 +52,7 @@ void JointPublisher::load_trajectory(const trajectory_msgs::JointTrajectory &tra
     trajectory_status.progress = 0;
 
     trajectory.header.stamp = ros::Time::now();
+
     trajectory.points.resize(trajectory_in.points.size());
 
     // If indexes[i] = j, this means that
@@ -66,9 +67,14 @@ void JointPublisher::load_trajectory(const trajectory_msgs::JointTrajectory &tra
         }
     }
     for (std::size_t n = 0; n < trajectory.points.size(); n++) {
+        trajectory.points[n].time_from_start = trajectory_in.points[n].time_from_start;
+        trajectory.points[n].positions.resize(joints.size());
         for (std::size_t i = 0; i < joints.size(); i++) {
             trajectory.points[n].positions[i] = trajectory_in.points[n].positions[indexes[i]];
         }
+        trajectory.points[n].velocities.resize(joints.size(), 0);
+        trajectory.points[n].accelerations.resize(joints.size(), 0);
+        trajectory.points[n].effort.resize(joints.size(), 0);
     }
 }
 
