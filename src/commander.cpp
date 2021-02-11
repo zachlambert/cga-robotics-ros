@@ -72,7 +72,6 @@ public:
                 goal.time = 5;
                 std::cout << "Pose goal: " << std::endl << goal.pose << std::endl;
                 trajectory_client.sendGoal(goal);
-                std::cout << "Just sent goal" << std::endl;
 
             } else if (tasks.front().type == TaskType::GRIPPER) {
                 // TODO
@@ -124,17 +123,14 @@ public:
             ee_twist_cmd_pub.publish(ee_twist_cmd);
 
         } else {
-            std::cout << "Checking state of trajectory client" << std::endl;
             if (tasks.front().type == TaskType::POSE &&
                 trajectory_client.getState().isDone())
             {
-                std::cout << "Pose task isDone" << std::endl;
                 tasks.pop();
                 start_next_task();
             } else if(tasks.front().type == TaskType::GRIPPER &&
                 true /* TODO:gripper_client.getState().isDone()*/ )
             {
-                std::cout << "Gripper task isDone" << std::endl;
                 tasks.pop();
                 start_next_task();
             }

@@ -12,12 +12,8 @@
 
 
 #include "cbot/conversions.h"
+#include "cga_robotics_ros/TrajectoryFeedback.h"
 #include "joint_publisher.h"
-
-enum class ControlMode {
-    VELOCITY,
-    TRAJECTORY
-};
 
 class Node {
 public:
@@ -36,9 +32,9 @@ public:
             "ee_twist_cmd", 1, &Node::ee_twist_cmd_callback, this
         );
 
-        loop_timer = n.createTimer(
-            ros::Duration(1.0/50),
-            &Node::loop,
+        velocity_timer = n.createTimer(
+            ros::Duration(1.0/20),
+            &Node::loop_velocity,
             this
         );
 
@@ -47,74 +43,83 @@ public:
 
     void trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
     {
+        velocity_timer.stop();
+
         cbot::Pose pose_goal = cbot::from_msg(goal->pose);
         double time = goal->time;
 
         cbot::JointTrajectory trajectory;
-        delta.calculate_trajectory(pose_goal, time, trajectory);
+        if (!delta.calculate_trajectory(pose_goal, time, trajectory)) {
+            trajectory_server.setAborted();
+            velocity_timer.start();
+            return;
+        }
 
         trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(trajectory);
         joint_publisher.load_trajectory(trajectory_msg);
+
+        ros::Rate rate(20);
+            cga_robotics_ros::TrajectoryFeedback feedback;
+        while (joint_publisher.get_trajectory_status().active) {
+            if (trajectory_server.isPreemptRequested() || !ros::ok()) {
+                trajectory_server.setPreempted();
+                velocity_timer.start();
+                return;
+            }
+            joint_publisher.update_from_trajectory();
+            joint_publisher.publish();
+
+            feedback.progress = joint_publisher.get_trajectory_status().progress;
+            trajectory_server.publishFeedback(feedback);
+            rate.sleep();
+        }
+        trajectory_server.setSucceeded();
+        velocity_timer.start();
     }
 
     void ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee_twist_cmd)
     {
         this->ee_twist_cmd = cbot::from_msg(ee_twist_cmd.twist);
-        control_mode = ControlMode::VELOCITY;
+        if (trajectory_server.isActive()) {
+            trajectory_server.setPreempted();
+        }
     }
 
-    void loop(const ros::TimerEvent &timer)
+    void loop_velocity(const ros::TimerEvent &timer)
     {
-        if (control_mode == ControlMode::VELOCITY) {
-            for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
-                delta.set_joint_position(
-                    joint_publisher.joints[i],
-                    joint_publisher.joint_positions[i]
-                );
-            }
-            delta.set_twist(ee_twist_cmd);
-            delta.update_joint_velocities();
-
-            std::vector<double> joint_velocities(joint_publisher.joints.size());
-            for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
-                joint_velocities[i] = delta.get_joints().at(
-                    joint_publisher.joints[i]).velocity;
-            }
-            joint_publisher.set_joint_velocities(joint_velocities);
+        if (trajectory_server.isActive()) {
+            std::cout << "Looping velocity" << std::endl;
         }
-
-        joint_publisher.loop(timer);
-
-        if (control_mode == ControlMode::TRAJECTORY) {
-            if (trajectory_server.isPreemptRequested()) {
-                joint_publisher.stop_trajectory();
-                control_mode = ControlMode::VELOCITY;
-                trajectory_server.setPreempted();
-                return;
-            }
-            bool active = joint_publisher.get_trajectory_status().active;
-            double progress = joint_publisher.get_trajectory_status().progress;
-            if (!active) {
-                trajectory_server.setSucceeded();
-            } else {
-                cga_robotics_ros::TrajectoryFeedback trajectory_feedback;
-                trajectory_feedback.progress = progress;
-                trajectory_server.publishFeedback(trajectory_feedback);
-            }
+        for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
+            delta.set_joint_position(
+                joint_publisher.joints[i],
+                joint_publisher.joint_positions[i]
+            );
         }
+        delta.set_twist(ee_twist_cmd);
+        delta.update_joint_velocities();
+
+        std::vector<double> joint_velocities(joint_publisher.joints.size());
+        for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
+            joint_velocities[i] = delta.get_joints().at(
+                joint_publisher.joints[i]).velocity;
+        }
+        joint_publisher.set_joint_velocities(joint_velocities);
+        joint_publisher.update_from_velocity(
+            timer.current_real - timer.last_real);
+        joint_publisher.publish();
     }
 
 private:
     cbot::Delta delta;
     JointPublisher joint_publisher;
-    ControlMode control_mode;
 
     actionlib::SimpleActionServer<cga_robotics_ros::TrajectoryAction> trajectory_server;
 
     ros::Subscriber ee_twist_cmd_sub;
     cbot::Twist ee_twist_cmd;
 
-    ros::Timer loop_timer;
+    ros::Timer velocity_timer;
 };
 
 int main(int argc, char **argv)

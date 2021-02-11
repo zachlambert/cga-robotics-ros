@@ -29,11 +29,6 @@
 
 class JointPublisher {
 public:
-    enum class Mode {
-        INACTIVE,
-        VELOCITY,
-        TRAJECTORY
-    };
     struct TrajectoryStatus {
         double progress;
         bool active;
@@ -43,19 +38,18 @@ public:
 
     void set_joint_velocities(const std::vector<double> &joint_velocities_in);
     void load_trajectory(const trajectory_msgs::JointTrajectory &trajectory);
-    void stop_trajectory();
     const TrajectoryStatus &get_trajectory_status()const { 
         return trajectory_status;
     }
 
-    void loop(const ros::TimerEvent &timer);
+    void update_from_velocity(const ros::Duration &elapsed);
+    void update_from_trajectory();
+    void publish();
 
     std::vector<std::string> joints;
     std::vector<double> joint_positions, joint_velocities;
 private:
-    Mode mode;
     std::vector<ros::Publisher> joint_positions_pub;
-
     trajectory_msgs::JointTrajectory trajectory;
     TrajectoryStatus trajectory_status;
 };
