@@ -10,10 +10,10 @@
 
 
 JointPublisher::JointPublisher(ros::NodeHandle &n, const std::vector<std::string> &joints):
-    mode(Mode::INACTIVE),
     joints(joints),
     joint_positions(joints.size(), 0),
-    joint_velocities(joints.size(), 0)
+    joint_velocities(joints.size(), 0),
+    mode(Mode::INACTIVE)
 {
     std::stringstream ss;
     std::string topic;
@@ -82,10 +82,11 @@ void JointPublisher::loop(const ros::TimerEvent &timer)
     if (mode == Mode::VELOCITY) {
         double dt = (timer.current_real - timer.last_real).toSec();
         for (std::size_t i = 0; i < joints.size(); i++) {
-            joint_positions[i] += joint_positions[i]*dt;
+            std::cout << "Vel " << i << " = " << joint_velocities[i] << std::endl;
+            joint_positions[i] += joint_velocities[i]*dt;
         }
 
-    } else {
+    } else if (mode == Mode::TRAJECTORY) {
         double t = (timer.current_real - trajectory.header.stamp).toSec();
         double u = t / trajectory.points.rbegin()->time_from_start.toSec();
         std::size_t n = u * trajectory.points.size();
@@ -100,6 +101,8 @@ void JointPublisher::loop(const ros::TimerEvent &timer)
             mode = Mode::INACTIVE;
             trajectory_status.active = false;
         }
+    } else { // INACTIVE
+        // Do nothing
     }
 
     for (std::size_t i = 0; i < joints.size(); i++) {

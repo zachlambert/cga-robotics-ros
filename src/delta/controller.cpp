@@ -33,11 +33,11 @@ public:
             false)
     {
         ee_twist_cmd_sub = n.subscribe(
-            "ee_twist_sub", 1, &Node::ee_twist_cmd_callback, this
+            "ee_twist_cmd", 1, &Node::ee_twist_cmd_callback, this
         );
 
         loop_timer = n.createTimer(
-            ros::Duration(1.0/20),
+            ros::Duration(1.0/50),
             &Node::loop,
             this
         );
@@ -72,6 +72,7 @@ public:
                     joint_publisher.joint_positions[i]
                 );
             }
+            std::cout << "Twist cmd = " << ee_twist_cmd << std::endl;
             delta.set_twist(ee_twist_cmd);
             delta.update_joint_velocities();
 
@@ -79,10 +80,10 @@ public:
             for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
                 joint_velocities[i] = delta.get_joints().at(
                     joint_publisher.joints[i]).velocity;
+                std::cout << i << " = " << joint_velocities[i] << std::endl;
             }
             joint_publisher.set_joint_velocities(joint_velocities);
         }
-        return;
 
         joint_publisher.loop(timer);
 
