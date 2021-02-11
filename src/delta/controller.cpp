@@ -42,7 +42,7 @@ public:
             this
         );
 
-        // trajectory_server.start();
+        trajectory_server.start();
     }
 
     void trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
@@ -72,7 +72,6 @@ public:
                     joint_publisher.joint_positions[i]
                 );
             }
-            std::cout << "Twist cmd = " << ee_twist_cmd << std::endl;
             delta.set_twist(ee_twist_cmd);
             delta.update_joint_velocities();
 
@@ -80,7 +79,6 @@ public:
             for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
                 joint_velocities[i] = delta.get_joints().at(
                     joint_publisher.joints[i]).velocity;
-                std::cout << i << " = " << joint_velocities[i] << std::endl;
             }
             joint_publisher.set_joint_velocities(joint_velocities);
         }

@@ -82,7 +82,6 @@ void JointPublisher::loop(const ros::TimerEvent &timer)
     if (mode == Mode::VELOCITY) {
         double dt = (timer.current_real - timer.last_real).toSec();
         for (std::size_t i = 0; i < joints.size(); i++) {
-            std::cout << "Vel " << i << " = " << joint_velocities[i] << std::endl;
             joint_positions[i] += joint_velocities[i]*dt;
         }
 

@@ -59,15 +59,15 @@ public:
             this
         );
 
-        // ROS_INFO("Waiting for trajectory server to start.");
-        // trajectory_client.waitForServer();
+        ROS_INFO("Waiting for trajectory server to start.");
+        trajectory_client.waitForServer();
     }
 
     void start_next_task() {
         if (!tasks.empty()) {
             if (tasks.front().type == TaskType::POSE) {
                 cga_robotics_ros::TrajectoryGoal goal;
-                goal.pose = ee_pose;
+                goal.pose = tasks.front().goal_pose;
                 // TODO: Remove time field, make controller determine suitable time
                 goal.time = 5;
                 std::cout << "Pose goal: " << std::endl << goal.pose << std::endl;
@@ -75,7 +75,7 @@ public:
 
             } else if (tasks.front().type == TaskType::GRIPPER) {
                 // TODO
-                std::cout << "Gripper task: " << gripper_angle << std::endl;
+                std::cout << "Gripper task: " << tasks.front().goal_gripper_angle << std::endl;
             }
         } else {
             mode = ControlMode::MANUAL;
