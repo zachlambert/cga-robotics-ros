@@ -49,8 +49,8 @@ public:
         joint_states_sub = n.subscribe(
             "joint_states", 1, &Node::joint_states_callback, this
         );
-        ee_twist_pub = n.advertise<geometry_msgs::TwistStamped>(
-            "ee_twist", 1
+        ee_twist_cmd_pub = n.advertise<geometry_msgs::TwistStamped>(
+            "ee_twist_cmd", 1
         );
 
         loop_timer = n.createTimer(
@@ -59,8 +59,8 @@ public:
             this
         );
 
-        ROS_INFO("Waiting for trajectory server to start.");
-        trajectory_client.waitForServer();
+        // ROS_INFO("Waiting for trajectory server to start.");
+        // trajectory_client.waitForServer();
     }
 
     void start_next_task() {
@@ -70,10 +70,12 @@ public:
                 goal.pose = ee_pose;
                 // TODO: Remove time field, make controller determine suitable time
                 goal.time = 5;
-                trajectory_client.sendGoal(goal);
+                std::cout << "Pose goal: " << std::endl << goal.pose << std::endl;
+                // trajectory_client.sendGoal(goal);
 
             } else if (tasks.front().type == TaskType::GRIPPER) {
                 // TODO
+                std::cout << "Gripper task: " << gripper_angle << std::endl;
             }
         } else {
             mode = ControlMode::MANUAL;
@@ -97,18 +99,19 @@ public:
                     == JoyButtonState::PRESSED)
             {
                 mode = ControlMode::TASKS;
+                std::cout << "Starting tasks" << std::endl;
                 start_next_task();
                 return;
             }
 
-            ee_twist.header.stamp = ros::Time::now();
+            ee_twist_cmd.header.stamp = ros::Time::now();
 
             // Set linear velocity
-            ee_twist.twist.linear.x =
+            ee_twist_cmd.twist.linear.x =
                 joystick_listener.query_axis(JoyAxis::LEFT_VERTICAL);
-            ee_twist.twist.linear.y =
+            ee_twist_cmd.twist.linear.y =
                 joystick_listener.query_axis(JoyAxis::LEFT_HORIZONTAL);
-            ee_twist.twist.linear.z =
+            ee_twist_cmd.twist.linear.z =
                 joystick_listener.query_axis(JoyAxis::RT)
                 - joystick_listener.query_axis(JoyAxis::LT);
 
@@ -117,11 +120,11 @@ public:
             // Controller is responsible for the coordinate transformation to
             // angular velocity.
 
-            ee_twist_pub.publish(ee_twist);
+            ee_twist_cmd_pub.publish(ee_twist_cmd);
 
         } else {
             if (tasks.front().type == TaskType::POSE &&
-                trajectory_client.getState().isDone())
+                true)//trajectory_client.getState().isDone())
             {
                 tasks.pop();
                 start_next_task();
@@ -157,13 +160,13 @@ private:
 
     ros::Subscriber joint_states_sub;
     ros::Subscriber ee_pose_sub;
-    ros::Publisher ee_twist_pub;
+    ros::Publisher ee_twist_cmd_pub;
     ros::Timer loop_timer;
 
     actionlib::SimpleActionClient<cga_robotics_ros::TrajectoryAction> trajectory_client;
 
     geometry_msgs::Pose ee_pose;
-    geometry_msgs::TwistStamped ee_twist;
+    geometry_msgs::TwistStamped ee_twist_cmd;
     double gripper_angle;
 };
 

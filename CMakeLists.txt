@@ -15,11 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(cbot REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-add_service_files(
-    FILES
-        PoseCommand.srv
-        VelocityCommand.srv
-)
 add_action_files(
     DIRECTORY action
     FILES

@@ -15,12 +15,12 @@
         <param name="lower_length" value="$(arg lower_length)"/>
     </node>
 
-    <!--<node
+    <node
         pkg="cga_robotics_ros"
         type="commander"
         name="commander"
         output="screen"
-    />-->
+    />
 
     <node
         pkg="joy"

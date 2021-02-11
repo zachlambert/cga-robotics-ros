@@ -6,12 +6,10 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <trajectory_msgs/JointTrajectory.h>
 #include <actionlib/server/simple_action_server.h>
+#include <cga_robotics_ros/TrajectoryAction.h>
 
 #include "cbot/delta.h"
 
-#include <cga_robotics_ros/PoseCommand.h>
-#include <cga_robotics_ros/VelocityCommand.h>
-#include <cga_robotics_ros/TrajectoryAction.h>
 
 #include "cbot/conversions.h"
 #include "joint_publisher.h"
@@ -38,37 +36,13 @@ public:
             "ee_twist_sub", 1, &Node::ee_twist_cmd_callback, this
         );
 
-        pose_command_server = n.advertiseService(
-            "robot_command", &Node::pose_command_callback, this
-        );
-
-        velocity_command_server = n.advertiseService(
-            "velocity_command", &Node::velocity_command_callback, this
-        );
-
         loop_timer = n.createTimer(
             ros::Duration(1.0/20),
             &Node::loop,
             this
         );
 
-        trajectory_server.start();
-    }
-
-    bool pose_command_callback(
-        cga_robotics_ros::PoseCommand::Request &req,
-        cga_robotics_ros::PoseCommand::Request &res)
-    {
-        // TODO: Remove this
-        return true;
-    }
-
-    bool velocity_command_callback(
-        cga_robotics_ros::VelocityCommand::Request &req,
-        cga_robotics_ros::VelocityCommand::Request &res)
-    {
-        control_mode = ControlMode::VELOCITY;
-        return true;
+        // trajectory_server.start();
     }
 
     void trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
@@ -86,6 +60,7 @@ public:
     void ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee_twist_cmd)
     {
         this->ee_twist_cmd = cbot::from_msg(ee_twist_cmd.twist);
+        control_mode = ControlMode::VELOCITY;
     }
 
     void loop(const ros::TimerEvent &timer)
@@ -107,6 +82,7 @@ public:
             }
             joint_publisher.set_joint_velocities(joint_velocities);
         }
+        return;
 
         joint_publisher.loop(timer);
 
@@ -134,8 +110,6 @@ private:
     JointPublisher joint_publisher;
     ControlMode control_mode;
 
-    ros::ServiceServer pose_command_server;
-    ros::ServiceServer velocity_command_server;
     actionlib::SimpleActionServer<cga_robotics_ros::TrajectoryAction> trajectory_server;
 
     ros::Subscriber ee_twist_cmd_sub;
