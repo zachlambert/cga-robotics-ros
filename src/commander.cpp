@@ -68,8 +68,8 @@ public:
             if (tasks.front().type == TaskType::POSE) {
                 cga_robotics_ros::TrajectoryGoal goal;
                 goal.pose = tasks.front().goal_pose;
-                // TODO: Remove time field, make controller determine suitable time
-                goal.time = 5;
+                goal.max_linear_speed = 0.15;
+                goal.max_angular_speed = 1;
                 std::cout << "Pose goal: " << std::endl << goal.pose << std::endl;
                 trajectory_client.sendGoal(goal);
 

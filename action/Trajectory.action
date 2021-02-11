@@ -1,5 +1,6 @@
 geometry_msgs/Pose pose
-float64 time
+float64 max_linear_speed
+float64 max_angular_speed
 ---
 ---
 float64 progress

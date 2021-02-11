@@ -45,11 +45,17 @@ public:
     {
         velocity_timer.stop();
 
+        for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
+            delta.set_joint_position(joint_publisher.joints[i],
+                joint_publisher.joint_positions[i]);
+        }
         cbot::Pose pose_goal = cbot::from_msg(goal->pose);
-        double time = goal->time;
 
         cbot::JointTrajectory trajectory;
-        if (!delta.calculate_trajectory(pose_goal, time, trajectory)) {
+        cbot::TrajectoryConstraints constraints;
+        constraints.max_linear_speed = goal->max_linear_speed;
+        constraints.max_angular_speed = goal->max_angular_speed;
+        if (!delta.calculate_trajectory(pose_goal, constraints, trajectory)) {
             trajectory_server.setAborted();
             velocity_timer.start();
             return;
