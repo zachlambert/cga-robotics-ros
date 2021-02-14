@@ -65,7 +65,7 @@ public:
         auto dependent_joints = delta.get_dependent_joint_names();
         for (std::size_t i = 0; i < dependent_joints.size(); i++) {
             joint_states.name.push_back(dependent_joints[i]);
-            joint_states.position.push_back(delta.get_joints().at(dependent_joints[i]).position);
+            joint_states.position.push_back(delta.get_joint_position(dependent_joints[i]));
         }
         joint_states.velocity.resize(joint_states.name.size(), 0);
         joint_states.effort.resize(joint_states.name.size(), 0);

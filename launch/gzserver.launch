@@ -1,6 +1,6 @@
 <launch>
     <node name="gzserver" pkg="gazebo_ros" type="gzserver"
         respawn="true"
-        args="$(find cga_robotics_ros)/worlds/default.world">
+        args="$(find cga_robotics_ros)/worlds/empty.world">
     </node>
 </launch>

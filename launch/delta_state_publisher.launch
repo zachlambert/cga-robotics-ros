@@ -24,6 +24,10 @@
     </node>
 
     <node
+        name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find cga_robotics_ros)/config/view_robot.rviz"
+    />
+    <node
         pkg="cga_robotics_ros"
         type="twist_marker"
         name="twist_marker"

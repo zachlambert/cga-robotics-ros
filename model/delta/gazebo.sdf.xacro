@@ -8,16 +8,6 @@
     <parent>world</parent>
     <child>base</child>
 </joint>
-<physics>
-    <ode>
-        <island_threads>
-            3
-        </island_threads>
-        <solver>
-            <iters>200</iters>
-        </solver>
-    </ode>
-</physics>
 
 <xacro:include filename="parameters.xacro"/>
 <xacro:include filename="../macros/inertia.xacro"/>

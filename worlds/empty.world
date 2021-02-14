@@ -7,5 +7,13 @@
         <include>
             <uri>model://sun</uri>
         </include>
+    <physics type="ode">
+        <type>world</type>
+        <ode>
+            <solver>
+                <iters>300</iters>
+            </solver>
+        </ode>
+    </physics>
     </world>
 </sdf>

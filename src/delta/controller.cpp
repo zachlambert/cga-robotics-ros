@@ -51,17 +51,18 @@ public:
         }
         cbot::Pose pose_goal = cbot::from_msg(goal->pose);
 
-        cbot::JointTrajectory trajectory;
         cbot::TrajectoryConstraints constraints;
         constraints.max_linear_speed = goal->max_linear_speed;
         constraints.max_angular_speed = goal->max_angular_speed;
-        if (!delta.calculate_trajectory(pose_goal, constraints, trajectory)) {
+        delta.set_trajectory_constraints(constraints);
+
+        if (!delta.calculate_trajectory(pose_goal)) {
             trajectory_server.setAborted();
             velocity_timer.start();
             return;
         }
 
-        trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(trajectory);
+        trajectory_msgs::JointTrajectory trajectory_msg = cbot::to_msg(delta.get_trajectory());
         joint_publisher.load_trajectory(trajectory_msg);
 
         ros::Rate rate(20);
@@ -107,8 +108,7 @@ public:
 
         std::vector<double> joint_velocities(joint_publisher.joints.size());
         for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
-            joint_velocities[i] = delta.get_joints().at(
-                joint_publisher.joints[i]).velocity;
+            joint_velocities[i] = delta.get_joint_velocity(joint_publisher.joints[i]);
         }
         joint_publisher.set_joint_velocities(joint_velocities);
         joint_publisher.update_from_velocity(

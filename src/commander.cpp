@@ -108,11 +108,11 @@ public:
 
             // Set linear velocity
             ee_twist_cmd.twist.linear.x =
-                0.1*joystick_listener.query_axis(JoyAxis::LEFT_VERTICAL);
+                0.25*joystick_listener.query_axis(JoyAxis::LEFT_VERTICAL);
             ee_twist_cmd.twist.linear.y =
-                0.1*joystick_listener.query_axis(JoyAxis::LEFT_HORIZONTAL);
+                0.25*joystick_listener.query_axis(JoyAxis::LEFT_HORIZONTAL);
             ee_twist_cmd.twist.linear.z =
-                0.1*(joystick_listener.query_axis(JoyAxis::LT)
+                0.25*(joystick_listener.query_axis(JoyAxis::LT)
                 - joystick_listener.query_axis(JoyAxis::RT));
 
             // Don't bother with angular velocity for now, since delta doesn't use
