@@ -11,7 +11,7 @@
         <type>world</type>
         <ode>
             <solver>
-                <iters>300</iters>
+                <iters>400</iters>
             </solver>
         </ode>
     </physics>
