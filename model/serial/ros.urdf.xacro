@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="industrial">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="serial">
 
 <xacro:include filename="../macros/inertia.xacro"/>
 <xacro:include filename="parameters.xacro"/>
@@ -76,7 +76,6 @@
 <xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper"/>
 
 <xacro:arm_link name="upper" length="${upper_length}" radius="${arm_radius}" mass="${upper_mass}" material="arm"/>
-
 <xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll"/>
 
 <xacro:arm_link name="wrist_roll" length="${wrist_roll_length}" radius="${wrist_radius}" mass="${wrist_roll_mass}" material="wrist"/>

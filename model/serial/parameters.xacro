@@ -25,12 +25,12 @@
 <xacro:property name="arm_radius" value="0.05"/>
 <xacro:property name="wrist_radius" value="0.03"/>
 
-<xacro:property name="fixed_base_mass" value="0.5"/>
-<xacro:property name="base_mass" value="0.5"/>
-<xacro:property name="lower_mass" value="0.1"/>
-<xacro:property name="upper_mass" value="0.1"/>
+<xacro:property name="fixed_base_mass" value="1"/>
+<xacro:property name="base_mass" value="1"/>
+<xacro:property name="lower_mass" value="0.5"/>
+<xacro:property name="upper_mass" value="0.5"/>
 <xacro:property name="wrist_roll_mass" value="0.1"/>
 <xacro:property name="wrist_pitch_mass" value="0.1"/>
-<xacro:property name="tool_base_mass" value="0.1"/>
+<xacro:property name="tool_base_mass" value="0.05"/>
 
 </robot>
