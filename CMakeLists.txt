@@ -44,12 +44,14 @@ include_directories(
 add_executable(delta_controller
     src/delta/controller.cpp
     src/joint_publisher.cpp
+    src/nodes/controller.cpp
 )
 target_link_libraries(delta_controller ${catkin_LIBRARIES} cbot)
 add_dependencies(delta_controller ${cga_robotics_ros_EXPORTED_TARGETS})
 
 add_executable(delta_state_publisher
     src/delta/state_publisher.cpp
+    src/nodes/state_publisher.cpp
 )
 target_link_libraries(delta_state_publisher ${catkin_LIBRARIES} cbot)
 
