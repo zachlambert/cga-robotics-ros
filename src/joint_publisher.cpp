@@ -32,6 +32,15 @@ JointPublisher::JointPublisher(ros::NodeHandle &n, const std::vector<std::string
     trajectory_status.active = false;
 }
 
+// Used to initialise
+void JointPublisher::set_joint_positions(const std::vector<double> &joint_positions_in)
+{
+    std::copy(
+        joint_positions_in.begin(), joint_positions_in.end(),
+        joint_positions.begin()
+    );
+}
+
 void JointPublisher::set_joint_velocities(const std::vector<double> &joint_velocities_in)
 {
     std::copy(

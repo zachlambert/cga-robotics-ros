@@ -36,6 +36,7 @@ public:
 
     JointPublisher(ros::NodeHandle &n, const std::vector<std::string> &joints);
 
+    void set_joint_positions(const std::vector<double> &joint_positions_in);
     void set_joint_velocities(const std::vector<double> &joint_velocities_in);
     void load_trajectory(const trajectory_msgs::JointTrajectory &trajectory);
     const TrajectoryStatus &get_trajectory_status()const { 

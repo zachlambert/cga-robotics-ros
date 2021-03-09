@@ -21,6 +21,12 @@ ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
     );
 
     trajectory_server.start();
+
+    std::vector<double> initial_joint_positions(joint_publisher.joints.size());
+    for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
+        initial_joint_positions[i] = robot->get_joint_position(joint_publisher.joints[i]);
+    }
+    joint_publisher.set_joint_positions(initial_joint_positions);
 }
 
 void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
@@ -106,6 +112,7 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
     }
     if (!robot->is_valid()) {
         joint_publisher.revert_from_velocity();
+        ROS_INFO("Invalid next state");
         return;
     }
     joint_publisher.publish();
