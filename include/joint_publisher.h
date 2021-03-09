@@ -45,10 +45,12 @@ public:
     void update_from_velocity(const ros::Duration &elapsed);
     void update_from_trajectory();
     void publish();
+    void revert_from_velocity();
 
     std::vector<std::string> joints;
     std::vector<double> joint_positions, joint_velocities;
 private:
+    double dt; // Set in update_from_velocity, used in revert_from_velocity
     std::vector<ros::Publisher> joint_positions_pub;
     trajectory_msgs::JointTrajectory trajectory;
     TrajectoryStatus trajectory_status;

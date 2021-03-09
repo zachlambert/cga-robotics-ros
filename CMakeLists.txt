@@ -55,6 +55,22 @@ add_executable(delta_state_publisher
 )
 target_link_libraries(delta_state_publisher ${catkin_LIBRARIES} cbot)
 
+# SERIAL
+
+add_executable(serial_controller
+    src/serial/controller.cpp
+    src/joint_publisher.cpp
+    src/nodes/controller.cpp
+)
+target_link_libraries(serial_controller ${catkin_LIBRARIES} cbot)
+add_dependencies(serial_controller ${cga_robotics_ros_EXPORTED_TARGETS})
+
+add_executable(serial_state_publisher
+    src/serial/state_publisher.cpp
+    src/nodes/state_publisher.cpp
+)
+target_link_libraries(serial_state_publisher ${catkin_LIBRARIES} cbot)
+
 # GENERAL
 
 add_executable(twist_marker src/twist_marker.cpp)

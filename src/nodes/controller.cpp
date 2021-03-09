@@ -78,6 +78,7 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
 {
     if (trajectory_server.isActive()) {
         std::cout << "Looping velocity" << std::endl;
+        // Shouldn't run this, this is here to make sure it doesn't
     }
     for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
         robot->set_joint_position(
@@ -95,5 +96,17 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
     joint_publisher.set_joint_velocities(joint_velocities);
     joint_publisher.update_from_velocity(
         timer.current_real - timer.last_real);
+
+    // Update robot with new joints and validate state
+    for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
+        robot->set_joint_position(
+            joint_publisher.joints[i],
+            joint_publisher.joint_positions[i]
+        );
+    }
+    if (!robot->is_valid()) {
+        joint_publisher.revert_from_velocity();
+        return;
+    }
     joint_publisher.publish();
 }

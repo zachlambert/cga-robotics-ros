@@ -12,7 +12,7 @@ void configure_arrow(
     const geometry_msgs::Vector3 vector,
     visualization_msgs::Marker &arrow)
 {
-    arrow.header.frame_id = "base";
+    arrow.header.frame_id = pose.header.frame_id;
     arrow.header.stamp = ros::Time::now();
     arrow.ns = "";
     arrow.id = 0;

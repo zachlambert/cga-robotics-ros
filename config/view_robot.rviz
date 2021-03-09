@@ -70,120 +70,40 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        chain_1_end:
+        base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        chain_2_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        chain_3_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        ee:
+        fixed_base:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_1_L_link:
+        lower:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_1_L_link_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_1_R_link:
+        tool_base:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_1_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_1_parent:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_1_root:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_2_L_link:
+        upper:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_2_L_link_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_2_R_link:
+        wrist_pitch:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_2_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_2_parent:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_2_root:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_3_L_link:
+        wrist_roll:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lower_3_L_link_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_3_R_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lower_3_end:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_3_parent:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        lower_3_root:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        upper_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        upper_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -239,7 +159,7 @@ Visualization Manager:
       Marker Topic: /ee_twist_linear
       Name: Marker
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Axes
@@ -253,7 +173,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:

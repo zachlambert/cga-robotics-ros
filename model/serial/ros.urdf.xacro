@@ -28,10 +28,15 @@
 </link>
 </xacro:macro>
 
-<xacro:macro name="arm_joint" params="name axis distance parent child">
-<joint name="${name}" type="revolute">
+<xacro:macro name="arm_joint" params="name axis distance parent child type lower_limit upper_limit">
+<joint name="${name}" type="${type}">
     <axis xyz="${axis}"/>
-    <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="10"/>
+    <xacro:if value="${type=='revolute'}">
+        <limit effort="1000.0" lower="${lower_limit}" upper="${upper_limit}" velocity="10"/>
+    </xacro:if>
+    <xacro:if value="${type=='continuous'}">
+        <limit effort="1000.0" velocity="10"/>
+    </xacro:if>
     <origin ryp="0 0 0" xyz="${distance} 0 0"/>
     <parent link="${parent}"/>
     <child link="${child}"/>
@@ -63,28 +68,29 @@
     <child link="fixed_base"/>
 </joint>
 
-<xacro:arm_link name="fixed_base" length="${fixed_base_height}" radius="${fixed_base_radius}" mass="${fixed_base_mass}" material="base"/>
+<xacro:arm_link name="fixed_base" length="${base_height/2}" radius="${base_radius}" mass="${base_mass/2}" material="base"/>
 
-<xacro:arm_joint name="theta_1" axis="1 0 0" distance="${base_height}" parent="fixed_base" child="base"/>
+<xacro:arm_joint name="theta_1" axis="1 0 0" distance="${base_height/2}" parent="fixed_base" child="base" type="continuous" lower_limit="0" upper_limit="0"/>
 
-<xacro:arm_link name="base" length="${base_height}" radius="${base_radius}" mass="${base_mass}" material="base"/>
+<xacro:arm_link name="base" length="${base_height/2}" radius="${base_radius}" mass="${base_mass/2}" material="base"/>
 
-<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height}" parent="base" child="lower"/>
+<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height/2}" parent="base" child="lower" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
 
 <xacro:arm_link name="lower" length="${lower_length}" radius="${arm_radius}" mass="${lower_mass}" material="arm"/>
 
-<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper"/>
+<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
 
 <xacro:arm_link name="upper" length="${upper_length}" radius="${arm_radius}" mass="${upper_mass}" material="arm"/>
-<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll"/>
+
+<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
 
 <xacro:arm_link name="wrist_roll" length="${wrist_roll_length}" radius="${wrist_radius}" mass="${wrist_roll_mass}" material="wrist"/>
 
-<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch"/>
+<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
 
 <xacro:arm_link name="wrist_pitch" length="${wrist_pitch_length}" radius="${wrist_radius}" mass="${wrist_pitch_mass}" material="wrist"/>
 
-<xacro:arm_joint name="theta_6" axis="1 0 0" distance="${wrist_pitch_length}" parent="wrist_pitch" child="tool_base"/>
+<xacro:arm_joint name="theta_6" axis="1 0 0" distance="${wrist_pitch_length}" parent="wrist_pitch" child="tool_base" type="continuous" lower_limit="0" upper_limit="0"/>
 
 <link name="tool_base">
 <inertial>

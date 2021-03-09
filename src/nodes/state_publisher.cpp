@@ -41,7 +41,7 @@ void StatePublisherNode::joint_states_callback(const sensor_msgs::JointState &jo
     }
     geometry_msgs::PoseStamped pose_msg;
     pose_msg.pose = cbot::to_msg(robot->get_pose());
-    pose_msg.header.frame_id="base";
+    pose_msg.header.frame_id="base_link";
     pose_msg.header.stamp = joint_states_in.header.stamp;
     ee_pose_pub.publish(pose_msg);
 
@@ -51,7 +51,7 @@ void StatePublisherNode::joint_states_callback(const sensor_msgs::JointState &jo
     }
     geometry_msgs::TwistStamped twist_msg;
     twist_msg.twist = cbot::to_msg(robot->get_twist());
-    twist_msg.header.frame_id="base";
+    twist_msg.header.frame_id="base_link";
     twist_msg.header.stamp = joint_states_in.header.stamp;
     ee_twist_pub.publish(twist_msg);
 

@@ -1,0 +1,24 @@
+<launch>
+    <node
+        pkg="cga_robotics_ros"
+        type="serial_state_publisher"
+        name="serial_state_publisher"
+        output="screen"
+    />
+    <node
+        pkg="robot_state_publisher"
+        type="robot_state_publisher"
+        name="robot_state_publisher">
+    </node>
+
+    <node
+        name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find cga_robotics_ros)/config/view_robot.rviz"
+    />
+    <node
+        pkg="cga_robotics_ros"
+        type="twist_marker"
+        name="twist_marker"
+    />
+
+</launch>

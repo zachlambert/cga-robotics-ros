@@ -107,18 +107,26 @@ public:
             ee_twist_cmd.header.stamp = ros::Time::now();
 
             // Set linear velocity
-            ee_twist_cmd.twist.linear.x =
-                0.25*joystick_listener.query_axis(JoyAxis::LEFT_VERTICAL);
-            ee_twist_cmd.twist.linear.y =
-                0.25*joystick_listener.query_axis(JoyAxis::LEFT_HORIZONTAL);
-            ee_twist_cmd.twist.linear.z =
-                0.25*(joystick_listener.query_axis(JoyAxis::LT)
-                - joystick_listener.query_axis(JoyAxis::RT));
 
-            // Don't bother with angular velocity for now, since delta doesn't use
-            // it. Later on, set angular velocity using euler velocities.
-            // Controller is responsible for the coordinate transformation to
-            // angular velocity.
+            if (!joystick_listener.query_button_value(JoyButton::LB)) {
+                ee_twist_cmd.twist.linear.x =
+                    0.25*joystick_listener.query_axis(JoyAxis::LEFT_VERTICAL);
+                ee_twist_cmd.twist.linear.y =
+                    0.25*joystick_listener.query_axis(JoyAxis::LEFT_HORIZONTAL);
+                ee_twist_cmd.twist.linear.z =
+                    0.25*(joystick_listener.query_axis(JoyAxis::LT)
+                    - joystick_listener.query_axis(JoyAxis::RT));
+            }
+
+            if (joystick_listener.query_button_value(JoyButton::LB)) {
+                ee_twist_cmd.twist.angular.x =
+                    0.5*joystick_listener.query_axis(JoyAxis::LEFT_VERTICAL);
+                ee_twist_cmd.twist.angular.y =
+                    0.5*joystick_listener.query_axis(JoyAxis::LEFT_HORIZONTAL);
+                ee_twist_cmd.twist.angular.z =
+                    0.5*(joystick_listener.query_axis(JoyAxis::LT)
+                    - joystick_listener.query_axis(JoyAxis::RT));
+            }
 
             ee_twist_cmd_pub.publish(ee_twist_cmd);
 

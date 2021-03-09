@@ -12,7 +12,8 @@
 JointPublisher::JointPublisher(ros::NodeHandle &n, const std::vector<std::string> &joints):
     joints(joints),
     joint_positions(joints.size(), 0),
-    joint_velocities(joints.size(), 0)
+    joint_velocities(joints.size(), 0),
+    dt(0)
 {
     std::stringstream ss;
     std::string topic;
@@ -77,7 +78,7 @@ void JointPublisher::load_trajectory(const trajectory_msgs::JointTrajectory &tra
 
 void JointPublisher::update_from_velocity(const ros::Duration &elapsed)
 {
-    double dt = elapsed.toSec();
+    dt = elapsed.toSec();
     for (std::size_t i = 0; i < joints.size(); i++) {
         joint_positions[i] += joint_velocities[i]*dt;
     }
@@ -107,5 +108,12 @@ void JointPublisher::publish()
         std_msgs::Float64 msg;
         msg.data = joint_positions[i];
         joint_positions_pub[i].publish(msg);
+    }
+}
+
+void JointPublisher::revert_from_velocity()
+{
+    for (std::size_t i = 0; i < joints.size(); i++) {
+        joint_positions[i] -= joint_velocities[i]*dt;
     }
 }
