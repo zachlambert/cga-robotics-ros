@@ -74,19 +74,19 @@
 
 <xacro:arm_link name="base" length="${base_height/2}" radius="${base_radius}" mass="${base_mass/2}" material="base"/>
 
-<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height/2}" parent="base" child="lower" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
+<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height/2}" parent="base" child="lower" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
 
 <xacro:arm_link name="lower" length="${lower_length}" radius="${arm_radius}" mass="${lower_mass}" material="arm"/>
 
-<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
+<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
 
 <xacro:arm_link name="upper" length="${upper_length}" radius="${arm_radius}" mass="${upper_mass}" material="arm"/>
 
-<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
+<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
 
 <xacro:arm_link name="wrist_roll" length="${wrist_roll_length}" radius="${wrist_radius}" mass="${wrist_roll_mass}" material="wrist"/>
 
-<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch" type="revolute" lower_limit="${-pi/2}" upper_limit="${pi/2}"/>
+<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
 
 <xacro:arm_link name="wrist_pitch" length="${wrist_pitch_length}" radius="${wrist_radius}" mass="${wrist_pitch_mass}" material="wrist"/>
 

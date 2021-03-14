@@ -6,13 +6,13 @@
 <xacro:arg name="lower_length" default="0.4"/>
 <xacro:property name="lower_length" value="$(arg lower_length)"/>
 
-<xacro:arg name="upper_length" default="0.2"/>
+<xacro:arg name="upper_length" default="0.4"/>
 <xacro:property name="upper_length" value="$(arg upper_length)"/>
 
 <xacro:arg name="wrist_roll_length" default="0.1"/>
 <xacro:property name="wrist_roll_length" value="$(arg wrist_roll_length)"/>
 
-<xacro:arg name="wrist_pitch_length" default="0.3"/>
+<xacro:arg name="wrist_pitch_length" default="0.1"/>
 <xacro:property name="wrist_pitch_length" value="$(arg wrist_pitch_length)"/>
 
 <!-- Other properties -->
