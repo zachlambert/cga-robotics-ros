@@ -27,6 +27,8 @@ ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
         initial_joint_positions[i] = robot->get_joint_position(joint_publisher.joints[i]);
     }
     joint_publisher.set_joint_positions(initial_joint_positions);
+
+    skip_velocity_timer = false;
 }
 
 void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
@@ -42,6 +44,7 @@ void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalC
     cbot::TrajectoryConstraints constraints;
     constraints.max_linear_speed = goal->max_linear_speed;
     constraints.max_angular_speed = goal->max_angular_speed;
+    constraints.max_joint_speed = 2;
     robot->set_trajectory_constraints(constraints);
 
     if (!robot->calculate_trajectory(pose_goal)) {
@@ -68,6 +71,7 @@ void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalC
         trajectory_server.publishFeedback(feedback);
         rate.sleep();
     }
+    skip_velocity_timer = true;
     trajectory_server.setSucceeded();
     velocity_timer.start();
 }
@@ -82,6 +86,13 @@ void ControllerNode::ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee
 
 void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
 {
+    if (skip_velocity_timer) {
+        // Do this after finishing trajectory, since timer.last is far
+        // in the past.
+        skip_velocity_timer = false;
+        return;
+    }
+
     if (trajectory_server.isActive()) {
         std::cout << "Looping velocity" << std::endl;
         // Shouldn't run this, this is here to make sure it doesn't

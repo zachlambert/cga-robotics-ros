@@ -33,6 +33,7 @@ private:
     cbot::Twist ee_twist_cmd;
 
     ros::Timer velocity_timer;
+    bool skip_velocity_timer;
 };
 
 #endif

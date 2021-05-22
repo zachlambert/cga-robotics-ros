@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     dim.dh_parameters.push_back(
         cbot::Serial::DHParameter(0.1, 0, 0));
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0.1, 0, 0, 0, false));
+        cbot::Serial::DHParameter(0.2, 0, 0, 0, false));
 
     cbot::Serial::JointNames joint_names;
     joint_names.push_back("theta_1");
