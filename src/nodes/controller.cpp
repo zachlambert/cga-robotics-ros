@@ -93,10 +93,6 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
         return;
     }
 
-    if (trajectory_server.isActive()) {
-        std::cout << "Looping velocity" << std::endl;
-        // Shouldn't run this, this is here to make sure it doesn't
-    }
     for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
         robot->set_joint_position(
             joint_publisher.joints[i],

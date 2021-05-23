@@ -87,13 +87,14 @@ trajectory_msgs::JointTrajectory to_msg(const JointTrajectory &trajectory)
 {
     trajectory_msgs::JointTrajectory msg;
     msg.joint_names = trajectory.names;
+    std::size_t num_joints = trajectory.names.size();
     msg.header.stamp = ros::Time::now();
     msg.points = std::vector<trajectory_msgs::JointTrajectoryPoint>(trajectory.points.size());
     for (std::size_t i = 0; i < msg.points.size(); i++) {
         msg.points[i].positions = trajectory.points[i].positions;
-        msg.points[i].velocities.resize(3, 0.0);
-        msg.points[i].accelerations.resize(3, 0.0);
-        msg.points[i].effort.resize(3, 0.0);
+        msg.points[i].velocities.resize(num_joints, 0.0);
+        msg.points[i].accelerations.resize(num_joints, 0.0);
+        msg.points[i].effort.resize(num_joints, 0.0);
         msg.points[i].time_from_start = ros::Duration(trajectory.points[i].time);
     }
     return msg;
