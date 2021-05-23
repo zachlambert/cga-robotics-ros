@@ -44,7 +44,7 @@ void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalC
     cbot::TrajectoryConstraints constraints;
     constraints.max_linear_speed = goal->max_linear_speed;
     constraints.max_angular_speed = goal->max_angular_speed;
-    constraints.max_joint_speed = 2;
+    constraints.max_joint_speed = 6;
     robot->set_trajectory_constraints(constraints);
 
     if (!robot->calculate_trajectory(pose_goal)) {

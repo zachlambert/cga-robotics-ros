@@ -68,8 +68,8 @@ public:
             if (tasks.front().type == TaskType::POSE) {
                 cga_robotics_ros::TrajectoryGoal goal;
                 goal.pose = tasks.front().goal_pose;
-                goal.max_linear_speed = 0.25;
-                goal.max_angular_speed = 1;
+                goal.max_linear_speed = 0.6;
+                goal.max_angular_speed = 3;
                 std::cout << "Pose goal: " << std::endl << goal.pose << std::endl;
                 trajectory_client.sendGoal(goal);
 
@@ -117,8 +117,8 @@ public:
 
             // Set angular velocity
             ee_twist_cmd.twist.angular.x =
-                2.5*((int)(joystick_listener.query_button_value(JoyButton::LB))
-                - (int)(joystick_listener.query_button_value(JoyButton::RB)));
+                2.5*((int)(joystick_listener.query_button_value(JoyButton::RB))
+                - (int)(joystick_listener.query_button_value(JoyButton::LB)));
             ee_twist_cmd.twist.angular.y =
                 -1.25*joystick_listener.query_axis(JoyAxis::RIGHT_HORIZONTAL);
             ee_twist_cmd.twist.angular.z =
