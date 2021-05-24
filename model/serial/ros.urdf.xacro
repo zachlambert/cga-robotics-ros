@@ -113,6 +113,83 @@
 </collision>
 </link>
 
+<link name="gripper_left">
+<visual>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</visual>
+<collision>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</collision>
+<inertial>
+    <origin xyz="0.05 0 0"/>
+    <mass value="${tool_base_mass/3}"/>
+    <xacro:box_inertia_urdf mass="${tool_base_mass/3}" w="0.1" h="0.005" d="0.05"/>
+</inertial>
+</link>
+
+<link name="gripper_right">
+<visual>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</visual>
+<collision>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</collision>
+<inertial>
+    <origin xyz="0.05 0 0"/>
+    <mass value="${tool_base_mass/3}"/>
+    <xacro:box_inertia_urdf mass="${tool_base_mass/3}" w="0.1" h="0.005" d="0.05"/>
+</inertial>
+</link>
+
+<joint name="gripper" type="revolute">
+    <origin xyz="0.04 -0.05 0" rpy="0 0 0.6"/>
+    <parent link="tool_base"/>
+    <child link="gripper_left"/>
+    <axis xyz="0 0 -1"/>
+    <limit
+        effort="1000.0"
+        lower="0"
+        upper="${pi/2}"
+        velocity="5"
+    />
+</joint>
+<transmission name="gripper_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="gripper">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="gripper_actr">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+
+<joint name="gripper_mimic" type="revolute">
+    <origin xyz="0.04 0.05 0" rpy="0 0 -0.6"/>
+    <parent link="tool_base"/>
+    <child link="gripper_right"/>
+    <axis xyz="0 0 1"/>
+    <limit
+        effort="1000.0"
+        lower="0"
+        upper="${pi/2}"
+        velocity="5"
+    />
+    <mimic joint="gripper"/>
+</joint>
+
 <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
 </gazebo>
