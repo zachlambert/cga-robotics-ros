@@ -83,7 +83,7 @@ public:
             } else if (tasks.front().type == TaskType::GRIPPER) {
                 cga_robotics_ros::GripperGoal goal;
                 goal.angle = tasks.front().goal_gripper_angle;
-                goal.speed = 0.78;
+                goal.speed = 3;
                 std::cout << "Gripper task: " << tasks.front().goal_gripper_angle << std::endl;
                 gripper_client.sendGoal(goal);
             }
