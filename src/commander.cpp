@@ -66,6 +66,8 @@ public:
 
         ROS_INFO("Waiting for trajectory server to start.");
         trajectory_client.waitForServer();
+        ROS_INFO("Waiting for gripper server to start.");
+        gripper_client.waitForServer();
     }
 
     void start_next_task() {
@@ -81,8 +83,9 @@ public:
             } else if (tasks.front().type == TaskType::GRIPPER) {
                 cga_robotics_ros::GripperGoal goal;
                 goal.angle = tasks.front().goal_gripper_angle;
-                goal.speed = 3;
+                goal.speed = 0.78;
                 std::cout << "Gripper task: " << tasks.front().goal_gripper_angle << std::endl;
+                gripper_client.sendGoal(goal);
             }
         } else {
             mode = ControlMode::MANUAL;

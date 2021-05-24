@@ -116,6 +116,7 @@ void ControllerNode::gripper_callback(const cga_robotics_ros::GripperGoalConstPt
         double u = ((double)(i+1))/N;
         trajectory_msg.points[i].positions.resize(1);
         trajectory_msg.points[i].positions[0] = initial_angle + delta_angle*u;
+        trajectory_msg.points[i].time_from_start = ros::Duration(u*T);
     }
 
     gripper_publisher.load_trajectory(trajectory_msg);
