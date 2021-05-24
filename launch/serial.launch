@@ -35,7 +35,7 @@
         pkg="controller_manager"
         type="spawner"
         respawn="false"
-        args="theta_1_controller theta_2_controller theta_3_controller theta_4_controller theta_5_controller theta_6_controller joint_state_controller"
+        args="theta_controller joint_state_controller"
     />
 
 </launch>
