@@ -22,6 +22,7 @@ ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
     gripper_cmd_sub = n.subscribe(
         "gripper_cmd", 1, &ControllerNode::gripper_cmd_callback, this
     );
+    gripper_cmd = 0;
 
     std::vector<double> initial_joint_positions(joint_publisher.joints.size());
     for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
@@ -194,6 +195,7 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
     }
     joint_publisher.publish();
 
+    gripper_publisher.set_joint_velocities({gripper_cmd});
     gripper_publisher.update_from_velocity(timer.current_real - timer.last_real);
     gripper_publisher.publish();
 }

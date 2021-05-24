@@ -4,4 +4,4 @@ gazebo_ros_control:
         theta_2: {p: 300, i: 0, d: 0.5}
         theta_3: {p: 300, i: 0, d: 0.5}
         theta_4: {p: 10, i: 0, d: 0.01}
-        gripper: {p: 1, i: 0, d: 0.001}
+        gripper: {p: 5, i: 0, d: 0.005}

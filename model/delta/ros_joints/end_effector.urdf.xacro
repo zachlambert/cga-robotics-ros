@@ -57,6 +57,7 @@
         <mechanicalReduction>1</mechanicalReduction>
     </actuator>
 </transmission>
+
 <transmission name="gripper_tran">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="gripper">

@@ -1,13 +1,14 @@
 #include <queue>
 #include <ros/ros.h>
+#include <std_msgs/Float64.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
-#include <cga_robotics_ros/PoseCommand.h>
-#include <cga_robotics_ros/VelocityCommand.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 #include <cga_robotics_ros/TrajectoryAction.h>
+#include <cga_robotics_ros/GripperAction.h>
 #include "joystick_listener.h"
 
 enum class TaskType {
@@ -41,7 +42,8 @@ public:
         config(config),
         joystick_listener(n),
         mode(ControlMode::MANUAL),
-        trajectory_client("trajectory", true)
+        trajectory_client("trajectory", true),
+        gripper_client("gripper", true)
     {
         ee_pose_sub = n.subscribe(
             "ee_pose", 1, &Node::ee_pose_callback, this
@@ -51,6 +53,9 @@ public:
         );
         ee_twist_cmd_pub = n.advertise<geometry_msgs::TwistStamped>(
             "ee_twist_cmd", 1
+        );
+        gripper_cmd_pub = n.advertise<std_msgs::Float64>(
+            "gripper_cmd", 1
         );
 
         loop_timer = n.createTimer(
@@ -74,7 +79,9 @@ public:
                 trajectory_client.sendGoal(goal);
 
             } else if (tasks.front().type == TaskType::GRIPPER) {
-                // TODO
+                cga_robotics_ros::GripperGoal goal;
+                goal.angle = tasks.front().goal_gripper_angle;
+                goal.speed = 3;
                 std::cout << "Gripper task: " << tasks.front().goal_gripper_angle << std::endl;
             }
         } else {
@@ -126,6 +133,11 @@ public:
 
             ee_twist_cmd_pub.publish(ee_twist_cmd);
 
+            std_msgs::Float64 gripper_cmd_msg;
+            gripper_cmd_msg.data =
+                3*joystick_listener.query_axis(JoyAxis::DPAD_HORIZONTAL);
+            gripper_cmd_pub.publish(gripper_cmd_msg);
+
         } else {
             if (tasks.front().type == TaskType::POSE &&
                 trajectory_client.getState().isDone())
@@ -133,7 +145,7 @@ public:
                 tasks.pop();
                 start_next_task();
             } else if(tasks.front().type == TaskType::GRIPPER &&
-                true /* TODO:gripper_client.getState().isDone()*/ )
+                gripper_client.getState().isDone())
             {
                 tasks.pop();
                 start_next_task();
@@ -165,9 +177,11 @@ private:
     ros::Subscriber joint_states_sub;
     ros::Subscriber ee_pose_sub;
     ros::Publisher ee_twist_cmd_pub;
+    ros::Publisher gripper_cmd_pub;
     ros::Timer loop_timer;
 
     actionlib::SimpleActionClient<cga_robotics_ros::TrajectoryAction> trajectory_client;
+    actionlib::SimpleActionClient<cga_robotics_ros::GripperAction> gripper_client;
 
     geometry_msgs::Pose ee_pose;
     geometry_msgs::TwistStamped ee_twist_cmd;
