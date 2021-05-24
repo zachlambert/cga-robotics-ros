@@ -9,19 +9,19 @@ ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
     trajectory_server(
         n, "trajectory",
         boost::bind(&ControllerNode::trajectory_callback, this, _1),
+        false),
+    gripper_server(
+        n, "gripper",
+        boost::bind(&ControllerNode::gripper_callback, this, _1),
         false)
 {
     ee_twist_cmd_sub = n.subscribe(
         "ee_twist_cmd", 1, &ControllerNode::ee_twist_cmd_callback, this
     );
 
-    velocity_timer = n.createTimer(
-        ros::Duration(1.0/20),
-        &ControllerNode::loop_velocity,
-        this
+    gripper_cmd_sub = n.subscribe(
+        "gripper_cmd", 1, &ControllerNode::gripper_cmd_callback, this
     );
-
-    trajectory_server.start();
 
     std::vector<double> initial_joint_positions(joint_publisher.joints.size());
     for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
@@ -31,12 +31,24 @@ ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
 
     gripper_publisher.set_joint_positions({0});
 
+    // Start timer and servers
+
+    velocity_timer = n.createTimer(
+        ros::Duration(1.0/20),
+        &ControllerNode::loop_velocity,
+        this
+    );
+
+    trajectory_server.start();
+    gripper_server.start();
+
     skip_velocity_timer = false;
 }
 
 void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalConstPtr &goal)
 {
     velocity_timer.stop();
+    skip_velocity_timer = true;
 
     for (std::size_t i = 0; i < joint_publisher.joints.size(); i++) {
         robot->set_joint_position(joint_publisher.joints[i],
@@ -60,7 +72,7 @@ void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalC
     joint_publisher.load_trajectory(trajectory_msg);
 
     ros::Rate rate(20);
-        cga_robotics_ros::TrajectoryFeedback feedback;
+    cga_robotics_ros::TrajectoryFeedback feedback;
     while (joint_publisher.get_trajectory_status().active) {
         if (trajectory_server.isPreemptRequested() || !ros::ok()) {
             trajectory_server.setPreempted();
@@ -74,8 +86,55 @@ void ControllerNode::trajectory_callback(const cga_robotics_ros::TrajectoryGoalC
         trajectory_server.publishFeedback(feedback);
         rate.sleep();
     }
-    skip_velocity_timer = true;
     trajectory_server.setSucceeded();
+    velocity_timer.start();
+}
+
+void ControllerNode::gripper_callback(const cga_robotics_ros::GripperGoalConstPtr &goal)
+{
+    velocity_timer.stop();
+    skip_velocity_timer = true;
+
+    double goal_angle = goal->angle;
+
+    // Fit linear trajectory for gripper
+
+    double initial_angle = gripper_publisher.joint_positions[0];
+    double delta_angle = goal_angle - initial_angle;
+    if (delta_angle > M_PI) delta_angle -= 2*M_PI;
+    if (delta_angle < -M_PI) delta_angle += 2*M_PI;
+
+    static constexpr double delta_t = 1e-2;
+    double T = std::fabs(delta_angle/goal->speed);
+    std::size_t N = (T/delta_t)+1;
+
+    trajectory_msgs::JointTrajectory trajectory_msg;
+    trajectory_msg.joint_names = {"gripper"};
+    trajectory_msg.points.resize(N);
+    for (std::size_t i = 0; i < N; i++) {
+        double u = ((double)(i+1))/N;
+        trajectory_msg.points[i].positions.resize(1);
+        trajectory_msg.points[i].positions[0] = initial_angle + delta_angle*u;
+    }
+
+    gripper_publisher.load_trajectory(trajectory_msg);
+
+    ros::Rate rate(20);
+    cga_robotics_ros::GripperFeedback feedback;
+    while (gripper_publisher.get_trajectory_status().active) {
+        if (gripper_server.isPreemptRequested() || !ros::ok()) {
+            gripper_server.setPreempted();
+            velocity_timer.start();
+            return;
+        }
+        gripper_publisher.update_from_trajectory();
+        gripper_publisher.publish();
+
+        feedback.progress = gripper_publisher.get_trajectory_status().progress;
+        gripper_server.publishFeedback(feedback);
+        rate.sleep();
+    }
+    gripper_server.setSucceeded();
     velocity_timer.start();
 }
 
@@ -84,6 +143,14 @@ void ControllerNode::ee_twist_cmd_callback(const geometry_msgs::TwistStamped &ee
     this->ee_twist_cmd = cbot::from_msg(ee_twist_cmd.twist);
     if (trajectory_server.isActive()) {
         trajectory_server.setPreempted();
+    }
+}
+
+void ControllerNode::gripper_cmd_callback(const std_msgs::Float64 gripper_cmd)
+{
+    this->gripper_cmd = gripper_cmd.data;
+    if (gripper_server.isActive()) {
+        gripper_server.setPreempted();
     }
 }
 
@@ -126,4 +193,7 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
         return;
     }
     joint_publisher.publish();
+
+    gripper_publisher.update_from_velocity(timer.current_real - timer.last_real);
+    gripper_publisher.publish();
 }
