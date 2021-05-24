@@ -8,14 +8,14 @@
 </joint>
 
 <joint name="theta_4" type="revolute">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 ${-pi/3}"/>
     <parent link="ee"/>
     <child link="gripper_base"/>
     <axis xyz="0 0 1"/>
     <limit
         effort="1000.0"
-        lower="${-pi*0.99}"
-        upper="${pi*0.99}"
+        lower="${-pi/2}"
+        upper="${pi/2}"
         velocity="5"
     />
 </joint>

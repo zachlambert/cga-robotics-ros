@@ -13,6 +13,7 @@ int main(int argc, char **argv)
     n_local.getParam("ee_radius", dim.r_ee);
     n_local.getParam("upper_length", dim.l_upper);
     n_local.getParam("lower_length", dim.l_lower);
+    dim.gripper_offset = 0.1;
 
     cbot::Delta::JointNames joint_names;
     joint_names.theta.push_back("theta_1");
@@ -27,6 +28,7 @@ int main(int argc, char **argv)
     joint_names.gamma.push_back("gamma_1");
     joint_names.gamma.push_back("gamma_2");
     joint_names.gamma.push_back("gamma_3");
+    joint_names.theta_4 = "theta_4";
 
     cbot::Robot *robot = new cbot::Delta(dim, joint_names);
     ControllerNode node(n, robot);
