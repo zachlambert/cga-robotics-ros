@@ -43,7 +43,7 @@ include_directories(
 
 add_executable(delta_controller
     src/delta/controller.cpp
-    src/joint_publisher.cpp
+    src/joint_group_publisher.cpp
     src/nodes/controller.cpp
 )
 target_link_libraries(delta_controller ${catkin_LIBRARIES} cbot)
@@ -59,7 +59,7 @@ target_link_libraries(delta_state_publisher ${catkin_LIBRARIES} cbot)
 
 add_executable(serial_controller
     src/serial/controller.cpp
-    src/joint_publisher.cpp
+    src/joint_group_publisher.cpp
     src/nodes/controller.cpp
 )
 target_link_libraries(serial_controller ${catkin_LIBRARIES} cbot)

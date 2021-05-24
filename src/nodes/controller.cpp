@@ -4,7 +4,8 @@
 
 ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
     robot(robot),
-    joint_publisher(n, robot->get_independent_joint_names()),
+    joint_publisher(n, "theta_controller", robot->get_independent_joint_names()),
+    gripper_publisher(n, "gripper_controller", {"gripper"}),
     trajectory_server(
         n, "trajectory",
         boost::bind(&ControllerNode::trajectory_callback, this, _1),
@@ -27,6 +28,8 @@ ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
         initial_joint_positions[i] = robot->get_joint_position(joint_publisher.joints[i]);
     }
     joint_publisher.set_joint_positions(initial_joint_positions);
+
+    gripper_publisher.set_joint_positions({0});
 
     skip_velocity_timer = false;
 }

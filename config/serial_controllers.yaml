@@ -1,26 +1,17 @@
-theta_1_controller:
-    type: position_controllers/JointPositionController
-    joint: theta_1
+theta_controller:
+    type: position_controllers/JointGroupPositionController
+    joints:
+        - theta_1
+        - theta_1
+        - theta_3
+        - theta_4
+        - theta_5
+        - theta_6
 
-theta_2_controller:
-    type: position_controllers/JointPositionController
-    joint: theta_2
-
-theta_3_controller:
-    type: position_controllers/JointPositionController
-    joint: theta_3
-
-theta_4_controller:
-    type: position_controllers/JointPositionController
-    joint: theta_4
-
-theta_5_controller:
-    type: position_controllers/JointPositionController
-    joint: theta_5
-
-theta_6_controller:
-    type: position_controllers/JointPositionController
-    joint: theta_6
+gripper_controller:
+    type: position_controllers/JointGroupPositionController
+    joints:
+        - gripper
 
 joint_state_controller:
     type: joint_state_controller/JointStateController

@@ -9,7 +9,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <trajectory_msgs/JointTrajectory.h>
 
-/* JointPublisher: Responsible for publishing joint position commands
+/* JointGroupPublisher: Responsible for publishing joint position commands
  * Three modes:
  * - INACTIVE: Keep positions constant.
  * - VELOCITY: Integrate positions from velocities.
@@ -27,19 +27,19 @@
  * Is it active? and what is the progress (0 -> 1)?
  */
 
-class JointPublisher {
+class JointGroupPublisher {
 public:
     struct TrajectoryStatus {
         double progress;
         bool active;
     };
 
-    JointPublisher(ros::NodeHandle &n, const std::vector<std::string> &joints);
+    JointGroupPublisher(ros::NodeHandle &n, const std::string &controller, const std::vector<std::string> &joints);
 
     void set_joint_positions(const std::vector<double> &joint_positions_in);
     void set_joint_velocities(const std::vector<double> &joint_velocities_in);
     void load_trajectory(const trajectory_msgs::JointTrajectory &trajectory);
-    const TrajectoryStatus &get_trajectory_status()const { 
+    const TrajectoryStatus &get_trajectory_status()const {
         return trajectory_status;
     }
 
@@ -48,11 +48,13 @@ public:
     void publish();
     void revert_from_velocity();
 
+    std::string controller;
     std::vector<std::string> joints;
     std::vector<double> joint_positions, joint_velocities;
 private:
     double dt; // Set in update_from_velocity, used in revert_from_velocity
-    std::vector<ros::Publisher> joint_positions_pub;
+    ros::Publisher pub;
+    std_msgs::Float64MultiArray msg;
     trajectory_msgs::JointTrajectory trajectory;
     TrajectoryStatus trajectory_status;
 };

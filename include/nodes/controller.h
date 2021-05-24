@@ -11,7 +11,7 @@
 #include <cga_robotics_ros/TrajectoryAction.h>
 
 #include "cga_robotics_ros/TrajectoryFeedback.h"
-#include "joint_publisher.h"
+#include "joint_group_publisher.h"
 
 #include "cbot/cbot.h"
 
@@ -25,7 +25,8 @@ private:
     void loop_velocity(const ros::TimerEvent &timer);
 
     std::unique_ptr<cbot::Robot> robot;
-    JointPublisher joint_publisher;
+    JointGroupPublisher joint_publisher;
+    JointGroupPublisher gripper_publisher;
 
     actionlib::SimpleActionServer<cga_robotics_ros::TrajectoryAction> trajectory_server;
 
