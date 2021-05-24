@@ -16,7 +16,7 @@
         rpy="0 0 ${yaw}"
         xyz="${cos(yaw)*base_radius} ${sin(yaw)*base_radius} 0"
     />
-    <parent link="base"/>
+    <parent link="base_link"/>
     <child link="upper_${number}"/>
 </joint>
 <transmission name="theta_${number}_tran">

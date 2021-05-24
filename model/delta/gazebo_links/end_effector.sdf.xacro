@@ -70,4 +70,91 @@
 
 </link>
 
+<link name="gripper_base">
+<pose> 0 0 ${ee_height} 0 0 0</pose>
+<visual name="gripper_base_visual">
+    <pose>0 0 -0.04 0 0 0</pose>
+    <geometry>
+        <box>
+            <size>0.05 0.1 0.08</size>
+        </box>
+    </geometry>
+</visual>
+<collision name="gripper_base_collision">
+    <pose>0 0 -0.04 0 0 0</pose>
+    <geometry>
+        <box>
+            <size>0.05 0.1 0.08</size>
+        </box>
+    </geometry>
+</collision>
+<inertial>
+    <mass>${ee_mass/10}</mass>
+    <xacro:box_inertia_sdf
+        mass="${ee_mass/10}"
+        w="0.05"
+        h="0.1"
+        d="0.08"
+    />
+</inertial>
+</link>
+
+<link name="gripper_left">
+<pose> 0 -0.05 ${ee_height-0.08} 0 0 0</pose>
+<visual name="gripper_left_visual">
+    <pose>0 0 -0.05 0 0 0</pose>
+    <geometry>
+        <box>
+            <size>0.05 0.005 0.1</size>
+        </box>
+    </geometry>
+</visual>
+<collision name="gripper_left_collision">
+    <pose>0 0 -0.05 0 0 0</pose>
+    <geometry>
+        <box>
+            <size>0.05 0.005 0.1</size>
+        </box>
+    </geometry>
+</collision>
+<inertial>
+    <mass>${ee_mass/10}</mass>
+    <xacro:box_inertia_sdf
+        mass="${ee_mass/10}"
+        w="0.05"
+        h="0.005"
+        d="0.1"
+    />
+</inertial>
+</link>
+
+<link name="gripper_right">
+<pose> 0 0.05 ${ee_height-0.08} 0 0 0</pose>
+<visual name="gripper_right_visual">
+    <pose>0 0 -0.05 0 0 0</pose>
+    <geometry>
+        <box>
+            <size>0.05 0.005 0.1</size>
+        </box>
+    </geometry>
+</visual>
+<collision name="gripper_right_collision">
+    <pose>0 0 -0.05 0 0 0</pose>
+    <geometry>
+        <box>
+            <size>0.05 0.005 0.1</size>
+        </box>
+    </geometry>
+</collision>
+<inertial>
+    <mass>${ee_mass/10}</mass>
+    <xacro:box_inertia_sdf
+        mass="${ee_mass/10}"
+        w="0.05"
+        h="0.005"
+        d="0.1"
+    />
+</inertial>
+</link>
+
 </robot>

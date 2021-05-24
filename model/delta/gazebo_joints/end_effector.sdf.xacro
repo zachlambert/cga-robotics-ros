@@ -31,4 +31,53 @@
 <xacro:joints_ee number="2" yaw="${2*pi/3}"/>
 <xacro:joints_ee number="3" yaw="${-2*pi/3}"/>
 
+<joint name="theta_4" type="revolute">
+    <pose>0 0 0 0 0 0</pose>
+    <parent>ee</parent>
+    <child>gripper_base</child>
+    <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+            <lower>${-pi*0.99}</lower>
+            <upper>${pi*0.99}</upper>
+            <velocity>100</velocity>
+        </limit>
+    </axis>
+</joint>
+
+<joint name="gripper" type="revolute">
+    <pose>0 0 0 0 0 0</pose>
+    <parent>gripper_base</parent>
+    <child>gripper_left</child>
+    <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+            <lower>0</lower>
+            <upper>${pi/2}</upper>
+            <velocity>100</velocity>
+        </limit>
+    </axis>
+</joint>
+
+<joint name="gripper_mimic" type="revolute">
+    <pose>0 0 0 0 0 0</pose>
+    <parent>gripper_base</parent>
+    <child>gripper_right</child>
+    <axis>
+        <xyz>-1 0 0</xyz>
+        <limit>
+            <lower>0</lower>
+            <upper>${pi/2}</upper>
+            <velocity>100</velocity>
+        </limit>
+    </axis>
+</joint>
+
+<plugin name="gripper_mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+  <joint>gripper</joint>
+  <mimicJoint>gripper_mimic</mimicJoint>
+  <multiplier>1</multiplier>
+</plugin>
+    -->
+
 </robot>

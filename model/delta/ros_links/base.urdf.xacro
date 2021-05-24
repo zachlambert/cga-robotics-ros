@@ -5,10 +5,10 @@
 <joint name="world_to_base" type="fixed">
     <origin xyz="0 0 ${upper_length + lower_length + 4*ee_depth}" rpy="0 0 0"/>
     <parent link="world"/>
-    <child link="base"/>
+    <child link="base_link"/>
 </joint>
 
-<link name="base">
+<link name="base_link">
 <visual>
     <geometry>
         <cylinder

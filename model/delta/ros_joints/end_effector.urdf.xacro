@@ -7,4 +7,65 @@
     <child link="ee"/>
 </joint>
 
+<joint name="theta_4" type="revolute">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="ee"/>
+    <child link="gripper_base"/>
+    <axis xyz="0 0 1"/>
+    <limit
+        effort="1000.0"
+        lower="${-pi*0.99}"
+        upper="${pi*0.99}"
+        velocity="5"
+    />
+</joint>
+
+<joint name="gripper" type="revolute">
+    <origin xyz="0 -0.05 -0.08" rpy="0 0 0"/>
+    <parent link="gripper_base"/>
+    <child link="gripper_left"/>
+    <axis xyz="1 0 0"/>
+    <limit
+        effort="1000.0"
+        lower="0"
+        upper="${pi/2}"
+        velocity="5"
+    />
+</joint>
+
+<joint name="gripper_mimic" type="revolute">
+    <origin xyz="0 0.05 -0.08" rpy="0 0 0"/>
+    <parent link="gripper_base"/>
+    <child link="gripper_right"/>
+    <axis xyz="-1 0 0"/>
+    <limit
+        effort="1000.0"
+        lower="0"
+        upper="${pi/2}"
+        velocity="5"
+    />
+    <mimic joint="gripper"/>
+</joint>
+
+<transmission name="theta_4_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="theta_4">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="theta_4">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+<transmission name="gripper_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="gripper">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="gripper">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+
 </robot>
