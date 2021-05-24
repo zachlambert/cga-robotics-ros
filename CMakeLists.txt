@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
     actionlib
     actionlib_msgs
     message_generation
+    controller_manager
 )
 
 find_package(cbot REQUIRED)
@@ -31,6 +32,7 @@ catkin_package(
         std_msgs
         geometry_msgs
         sensor_msgs
+        controller_manager
     DEPENDS
         EIGEN3
 )
@@ -38,6 +40,7 @@ catkin_package(
 include_directories(
     ${catkin_INCLUDE_DIRS}
     include
+    /usr/include/libusb-1.0
 )
 
 # DELTA
@@ -56,6 +59,12 @@ add_executable(delta_state_publisher
 )
 target_link_libraries(delta_state_publisher ${catkin_LIBRARIES} cbot)
 
+add_executable(delta_hardware_interface
+    src/delta/hardware_interface.cpp
+)
+target_include_directories(delta_hardware_interface PRIVATE src/delta)
+target_link_libraries(delta_hardware_interface ${catkin_LIBRARIES})
+
 # SERIAL
 
 add_executable(serial_controller
@@ -71,6 +80,12 @@ add_executable(serial_state_publisher
     src/nodes/state_publisher.cpp
 )
 target_link_libraries(serial_state_publisher ${catkin_LIBRARIES} cbot)
+
+add_executable(serial_hardware_interface
+    src/serial/hardware_interface.cpp
+)
+target_include_directories(serial_hardware_interface PRIVATE src/serial)
+target_link_libraries(serial_hardware_interface ${catkin_LIBRARIES} usb-1.0)
 
 # GENERAL
 
