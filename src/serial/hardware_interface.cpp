@@ -74,14 +74,51 @@ public:
     }
 };
 
+double alpha_to_beta(double alpha)
+{
+    ROS_INFO("Alpha: %f", alpha);
+    static double a = 28, b = 54, c = 30.5, d = 60.5;
+    double p_sq = b*b + c*c - 2*b*c*std::cos(alpha);
+    double cos_gam = (a*a + d*d - p_sq) / (2*a*d);
+    double sin_gam = std::sqrt(1 - cos_gam*cos_gam);
+    double p = std::sqrt(p_sq);
+    ROS_INFO("p: %f", p);
+    double beta1 = std::asin(sin_gam*d/p);
+    double beta2 = std::asin(std::sin(alpha)*c/p);
+    ROS_INFO("Beta1: %f", beta1);
+    ROS_INFO("Beta2: %f", beta2);
+    ROS_INFO("Beta: %f", beta1+beta2);
+    return beta1 + beta2;
+}
+
+double transform_theta_3_angle(double angle)
+{
+    static double alpha0 = 98.0*M_PI/180.0;
+    static double beta0 = alpha_to_beta(alpha0);
+    ROS_INFO("Angle: %f", angle);
+    double beta = alpha_to_beta(angle + alpha0);
+    ROS_INFO("Command: %f", beta0-beta);
+    return beta0 - beta;
+}
+
 struct Servo {
     int servo;
-    double origin;
+    double zero_pos; // Position of angle which corresponds to a zero command to the servo
     double multiplier;
-    Servo(): servo(-1), origin(0), multiplier(1) {}
-    Servo(int servo): servo(servo), origin(0), multiplier(1) {}
-    Servo(int servo, double origin): servo(servo), origin(origin), multiplier(1) {}
-    Servo(int servo, double origin, double multiplier): servo(servo), origin(origin), multiplier(multiplier) {}
+    Servo(): servo(-1) {}
+    Servo(int servo, double zero_pos): servo(servo), zero_pos(zero_pos), multiplier(1) {}
+    Servo(int servo, double zero_pos, double multiplier): servo(servo), zero_pos(zero_pos), multiplier(multiplier) {}
+
+    double get_pos(double angle)
+    {
+        angle = (angle - zero_pos);
+        if (servo == 3) { // 0=theta_1, (1,2)=theta_2, 3=theta_3
+            ROS_INFO("Input: %f", angle);
+            angle = transform_theta_3_angle(angle);
+            ROS_INFO("Output: %f", angle);
+        }
+        return multiplier*angle;
+    }
 };
 
 class Hardware: public hardware_interface::RobotHW {
@@ -107,11 +144,11 @@ public:
         registerInterface(&cmd_interface);
 
         servos = {
-            Servo(0), Servo(-1), Servo(3), Servo(4), Servo(5),
-            Servo(6), Servo(7) };
+            Servo(0, 0), Servo(), Servo(3, 100.0*(M_PI/180.0)), Servo(4, 0), Servo(5, 0, -1),
+            Servo(6, 0), Servo(7, 35.0*(M_PI/180.0)) };
 
-        theta_1_servo_left = Servo(1);
-        theta_1_servo_left = Servo(2, 0, -1);
+        theta_1_servo_left = Servo(1, 6.0*(M_PI/180.0), -1);
+        theta_1_servo_right = Servo(2, 6.0*(M_PI/180.0), 1);
     }
 
     ~Hardware()
@@ -140,15 +177,12 @@ public:
         for (std::size_t i = 0; i < servos.size(); i++) {
             int servo = servos[i].servo;
             if (servo < 0) continue;
-            double pos = servos[i].origin + servos[i].multiplier*cmd[i];
-            ROS_INFO("Pos = %f", pos);
+            double pos = servos[i].get_pos(cmd[i]);
             maestro.set_position(servo, pos);
         }
 
-        double pos_1_left = theta_1_servo_left.origin + cmd[1]*theta_1_servo_left.multiplier;
-        double pos_1_right = theta_1_servo_right.origin + cmd[1]*theta_1_servo_right.multiplier;
-        maestro.set_position(theta_1_servo_left.servo, pos_1_left);
-        maestro.set_position(theta_1_servo_right.servo, pos_1_right);
+        maestro.set_position(theta_1_servo_left.servo, theta_1_servo_left.get_pos(cmd[1]));
+        maestro.set_position(theta_1_servo_right.servo, theta_1_servo_right.get_pos(cmd[1]));
     }
 private:
     Maestro maestro;
