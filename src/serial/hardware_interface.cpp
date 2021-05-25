@@ -62,7 +62,7 @@ public:
     void set_position(int servo, double pos)
     {
         // Position in degrees from -60 to 60
-        int command = 4*(1472 + (pos/180)*(2400-544));
+        int command = 4*(1472 + (pos/M_PI)*(2400-544));
         if (command < 4*800) command = 4*800;
         if (command > 4*2144) command = 4*2144;
         set_target(servo, command);
@@ -114,6 +114,15 @@ public:
         theta_1_servo_left = Servo(2, 0, -1);
     }
 
+    ~Hardware()
+    {
+        for (Servo servo: servos) {
+            if (servo.servo >= 0) maestro.disable(servo.servo);
+        }
+        maestro.disable(theta_1_servo_left.servo);
+        maestro.disable(theta_1_servo_right.servo);
+    }
+
     void read()
     {
         // For now, just assume pos is updated instantly.
@@ -125,10 +134,14 @@ public:
 
     void write()
     {
+        if (!maestro.is_valid()) {
+            ROS_ERROR("Couldn't connect to maestro");
+        }
         for (std::size_t i = 0; i < servos.size(); i++) {
             int servo = servos[i].servo;
             if (servo < 0) continue;
             double pos = servos[i].origin + servos[i].multiplier*cmd[i];
+            ROS_INFO("Pos = %f", pos);
             maestro.set_position(servo, pos);
         }
 
@@ -162,8 +175,6 @@ public:
 
     void loop(const ros::TimerEvent &timer)
     {
-        if (!successful) return;
-
         hw.read();
         cm.update(
             ros::Time::now(),
@@ -176,8 +187,6 @@ private:
     Hardware hw;
     controller_manager::ControllerManager cm;
     ros::Timer loop_timer;
-    ros::ServiceServer calibrate_server;
-    bool successful;
 };
 
 int main(int argc, char **argv)
