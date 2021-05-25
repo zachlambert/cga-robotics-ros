@@ -2,6 +2,15 @@
 #include "nodes/controller.h"
 #include "cbot/serial.h"
 
+bool state_constraint(const cbot::Joints &joints)
+{
+    for (const auto &pair: joints) {
+        if (pair.second.position > M_PI/3) return false;
+        if (pair.second.position < -M_PI/3) return false;
+    }
+    return true;
+}
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "delta_fk");
@@ -30,6 +39,6 @@ int main(int argc, char **argv)
     joint_names.push_back("theta_6");
 
     cbot::Robot *robot = new cbot::Serial(dim, joint_names);
-    ControllerNode node(n, robot);
+    ControllerNode node(n, robot, state_constraint);
     ros::spin();
 }

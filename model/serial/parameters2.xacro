@@ -69,7 +69,7 @@
 
 <xacro:property name="rd5" value="0"/>
 <xacro:property name="md5" value="0"/>
-<xacro:property name="ra5" value="0.025"/>
+<xacro:property name="ra5" value="0.01"/>
 <xacro:property name="ma5" value="0.01"/>
 <material name="mat5">
     <color rgba="0 1 0 1"/>

@@ -127,12 +127,12 @@ public:
 
             // Set angular velocity
             ee_twist_cmd.twist.angular.x =
-                2.5*((int)(joystick_listener.query_button_value(JoyButton::RB))
-                - (int)(joystick_listener.query_button_value(JoyButton::LB)));
+                1.25*joystick_listener.query_axis(JoyAxis::RIGHT_VERTICAL);
             ee_twist_cmd.twist.angular.y =
                 -1.25*joystick_listener.query_axis(JoyAxis::RIGHT_HORIZONTAL);
             ee_twist_cmd.twist.angular.z =
-                -1.25*joystick_listener.query_axis(JoyAxis::RIGHT_VERTICAL);
+                2.5*((int)(joystick_listener.query_button_value(JoyButton::RB))
+                - (int)(joystick_listener.query_button_value(JoyButton::LB)));
 
             ee_twist_cmd_pub.publish(ee_twist_cmd);
 

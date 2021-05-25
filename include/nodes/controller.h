@@ -18,12 +18,16 @@
 
 class ControllerNode {
 public:
-    ControllerNode(ros::NodeHandle &n, cbot::Robot *robot);
+    ControllerNode(
+        ros::NodeHandle &n,
+        cbot::Robot *robot,
+        cbot::Robot::constraint_t state_constraint=nullptr);
 
 private:
     // Robot model
 
     std::unique_ptr<cbot::Robot> robot;
+    cbot::Robot::constraint_t state_constraint;
 
     // Main joint publisher
 

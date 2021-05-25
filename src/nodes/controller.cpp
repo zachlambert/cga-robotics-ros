@@ -2,8 +2,12 @@
 
 #include "cbot/conversions.h"
 
-ControllerNode::ControllerNode(ros::NodeHandle &n, cbot::Robot *robot):
+ControllerNode::ControllerNode(
+        ros::NodeHandle &n,
+        cbot::Robot *robot,
+        cbot::Robot::constraint_t state_constraint):
     robot(robot),
+    state_constraint(state_constraint),
     joint_publisher(n, "theta_controller", robot->get_independent_joint_names()),
     gripper_publisher(n, "gripper_controller", {"gripper"}),
     trajectory_server(
@@ -189,7 +193,7 @@ void ControllerNode::loop_velocity(const ros::TimerEvent &timer)
             joint_publisher.joint_positions[i]
         );
     }
-    if (!robot->is_valid()) {
+    if (!robot->is_valid(state_constraint)) {
         joint_publisher.revert_from_velocity();
         ROS_INFO("Invalid next state");
         return;
