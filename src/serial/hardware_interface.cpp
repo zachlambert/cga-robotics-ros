@@ -79,12 +79,9 @@ double alpha_to_beta(double alpha)
     ROS_INFO("Alpha: %f", alpha);
     static double a = 28, b = 54, c = 30.5, d = 60.5;
     double p_sq = b*b + c*c - 2*b*c*std::cos(alpha);
-    double cos_gam = (a*a + d*d - p_sq) / (2*a*d);
-    double sin_gam = std::sqrt(1 - cos_gam*cos_gam);
     double p = std::sqrt(p_sq);
-    ROS_INFO("p: %f", p);
-    double beta1 = std::asin(sin_gam*d/p);
-    double beta2 = std::asin(std::sin(alpha)*c/p);
+    double beta1 = std::acos((p_sq+a*a-d*d)/(2*p*a));
+    double beta2 = std::acos((p_sq+b*b-c*c)/(2*p*b));
     ROS_INFO("Beta1: %f", beta1);
     ROS_INFO("Beta2: %f", beta2);
     ROS_INFO("Beta: %f", beta1+beta2);
