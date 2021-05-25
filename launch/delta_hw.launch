@@ -1,0 +1,45 @@
+<launch>
+    <!-- Set robot dimensions and load urdf and sdf -->
+
+    <arg name="base_radius" default="0.1"/>
+    <arg name="ee_radius" default="0.1"/>
+    <arg name="upper_length" default="0.3"/>
+    <arg name="lower_length" default="0.4"/>
+
+    <param
+        name="robot_description"
+        command="xacro '$(find cga_robotics_ros)/model/delta/ros.urdf.xacro' base_radius:=$(arg base_radius) ee_radius:=$(arg ee_radius) upper_length:=$(arg upper_length) lower_length:=$(arg lower_length)"
+    />
+    <param
+        name="robot_description_sdf"
+        command="xacro '$(find cga_robotics_ros)/model/delta/gazebo.sdf.xacro' base_radius:=$(arg base_radius) ee_radius:=$(arg ee_radius) upper_length:=$(arg upper_length) lower_length:=$(arg lower_length)"
+    />
+
+    <!-- Start hardware interface -->
+
+    <rosparam
+        file="$(find cga_robotics_ros)/config/delta_gazebo_control_gains.yaml"
+        command="load"
+    />
+    <node
+        name="delta_hardware_interface"
+        pkg="cga_robotics_ros"
+        type="delta_hardware_interface"
+        output="screen"
+    />
+
+    <!-- Start ros_control -->
+
+    <rosparam
+        file="$(find cga_robotics_ros)/config/delta_controllers.yaml"
+        command="load"
+    />
+    <node
+        name="controller_spawner"
+        pkg="controller_manager"
+        type="spawner"
+        respawn="false"
+        args="theta_controller gripper_controller joint_state_controller"
+    />
+
+</launch>
