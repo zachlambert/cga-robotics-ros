@@ -75,8 +75,8 @@ public:
             if (tasks.front().type == TaskType::POSE) {
                 cga_robotics_ros::TrajectoryGoal goal;
                 goal.pose = tasks.front().goal_pose;
-                goal.max_linear_speed = 0.6;
-                goal.max_angular_speed = 3;
+                goal.max_linear_speed = 0.1;
+                goal.max_angular_speed = 1.5;
                 std::cout << "Pose goal: " << std::endl << goal.pose << std::endl;
                 trajectory_client.sendGoal(goal);
 

@@ -141,7 +141,7 @@ public:
         registerInterface(&cmd_interface);
 
         servos = {
-            Servo(0, 0), Servo(), Servo(3, 100.0*(M_PI/180.0)), Servo(4, 0), Servo(5, 0, -1),
+            Servo(0, 0), Servo(), Servo(3, 100.0*(M_PI/180.0)), Servo(4, 0), Servo(5, 30.0*(M_PI/180), -1),
             Servo(6, 0), Servo(7, 35.0*(M_PI/180.0)) };
 
         theta_1_servo_left = Servo(1, 6.0*(M_PI/180.0), -1);

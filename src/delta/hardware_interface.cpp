@@ -111,7 +111,7 @@ public:
     Node(ros::NodeHandle& n): hw(n), cm(&hw, n)
     {
         loop_timer = n.createTimer(
-            ros::Duration(1.0/25),
+            ros::Duration(1.0/40),
             &Node::loop,
             this
         );
