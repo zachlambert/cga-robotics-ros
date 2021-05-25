@@ -1,10 +1,10 @@
 <launch>
     <!-- Set robot dimensions and load urdf and sdf -->
 
-    <arg name="base_radius" default="0.1"/>
-    <arg name="ee_radius" default="0.1"/>
-    <arg name="upper_length" default="0.3"/>
-    <arg name="lower_length" default="0.4"/>
+    <arg name="base_radius" default="0.07"/>
+    <arg name="ee_radius" default="0.035"/>
+    <arg name="upper_length" default="0.13"/>
+    <arg name="lower_length" default="0.315"/>
 
     <param
         name="robot_description"

@@ -47,11 +47,11 @@ int get_fd()
 
 void write_pos(int fd, int i, double angle)
 {
-    double degrees = angle*180/M_PI + 22;
+    double degrees = angle*180/M_PI + 45;
     if (degrees < 0) degrees = 0;
     if (degrees > 90) degrees = 90;
-    static uint16_t signatures[] = {111, 222, 333, 444, 555};
-    uint16_t cmd = (5000.0*10.0/513) * degrees;
+    static uint16_t signatures[] = {222, 333, 111, 444, 555};
+    uint16_t cmd = (2500.0*10.0/513) * degrees;
     uint32_t packet = cmd << 16 | signatures[i];
     write(fd, &packet, 4);
 }
