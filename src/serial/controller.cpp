@@ -9,17 +9,17 @@ int main(int argc, char **argv)
 
     cbot::Serial::Dimensions dim;
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0, 0.1, 0));
+        cbot::Serial::DHParameter(0, 0.083, 0));
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0, 0, -M_PI/2, -M_PI/2));
+        cbot::Serial::DHParameter(0.04, 0, -M_PI/2, -1.4));
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0.4, 0, 0));
+        cbot::Serial::DHParameter(0.13, 0, 0, 0.1));
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0.4, 0, 0, 0, false));
+        cbot::Serial::DHParameter(0.02, 0.165, -M_PI/2));
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0.1, 0, 0));
+        cbot::Serial::DHParameter(0, 0, M_PI/2, 3.66));
     dim.dh_parameters.push_back(
-        cbot::Serial::DHParameter(0.2, 0, 0, 0, false));
+        cbot::Serial::DHParameter(0.008, 0.075, M_PI/2, -M_PI/2));
 
     cbot::Serial::JointNames joint_names;
     joint_names.push_back("theta_1");
@@ -30,9 +30,6 @@ int main(int argc, char **argv)
     joint_names.push_back("theta_6");
 
     cbot::Robot *robot = new cbot::Serial(dim, joint_names);
-    robot->set_joint_position("theta_2", -0.2);
-    robot->set_joint_position("theta_3", 1.1);
-    robot->set_joint_position("theta_5", 0.6);
     ControllerNode node(n, robot);
     ros::spin();
 }

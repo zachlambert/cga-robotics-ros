@@ -7,6 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
+        - /Pose1
         - /TF1
         - /Axes1
       Splitter Ratio: 0.48235294222831726
@@ -65,11 +66,6 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         base_link:
           Alpha: 1
           Show Axes: false
@@ -79,27 +75,32 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        lower:
+        link1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        tool_base:
+        link2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        upper:
+        link3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        wrist_pitch:
+        link4:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        wrist_roll:
+        link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link6:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -116,11 +117,11 @@ Visualization Manager:
       Class: rviz/Pose
       Color: 255; 25; 0
       Enabled: true
-      Head Length: 0.05000000074505806
-      Head Radius: 0.03999999910593033
+      Head Length: 0.019999999552965164
+      Head Radius: 0.014999999664723873
       Name: Pose
-      Shaft Length: 0.10000000149011612
-      Shaft Radius: 0.019999999552965164
+      Shaft Length: 0.019999999552965164
+      Shaft Radius: 0.009999999776482582
       Shape: Arrow
       Topic: /ee_pose
       Unreliable: false
@@ -155,13 +156,13 @@ Visualization Manager:
       Update Interval: 0
       Value: false
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /ee_twist_linear
       Name: Marker
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Class: rviz/Axes
       Enabled: true
       Length: 0.20000000298023224
@@ -197,25 +198,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.1686992645263672
+      Distance: 0.6595684289932251
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.037921104580163956
-        Y: -0.0780930295586586
-        Z: 0.15243609249591827
+        X: 0.14982032775878906
+        Y: -0.028660748153924942
+        Z: 0.14026519656181335
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3097974956035614
+      Pitch: 0.18020260334014893
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.043573379516602
+      Yaw: 0.2453700751066208
     Saved: ~
 Window Geometry:
   Displays:

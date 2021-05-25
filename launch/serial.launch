@@ -1,14 +1,9 @@
 <launch>
     <!-- Set robot dimensions and load urdf and sdf -->
 
-    <arg name="base_radius" default="0.1"/>
-    <arg name="ee_radius" default="0.1"/>
-    <arg name="upper_length" default="0.3"/>
-    <arg name="lower_length" default="0.4"/>
-
     <param
         name="robot_description"
-    command="xacro '$(find cga_robotics_ros)/model/serial/ros.urdf.xacro'"
+        command="xacro '$(find cga_robotics_ros)/model/serial/ros2.urdf.xacro'"
     />
 
     <!-- Spawn model in gazebo -->

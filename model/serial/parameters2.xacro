@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="delta_parameters">
+
+<!-- DH Parameters -->
+
+<xacro:property name="alpha1" value="0"/>
+<xacro:property name="d1" value="0.083"/>
+<xacro:property name="a1" value="0.04"/>
+<xacro:property name="theta1" value="0"/>
+
+<xacro:property name="alpha2" value="${-pi/2}"/>
+<xacro:property name="d2" value="0"/>
+<xacro:property name="a2" value="0.13"/>
+<xacro:property name="theta2" value="-1.4"/>
+
+<xacro:property name="alpha3" value="0"/>
+<xacro:property name="d3" value="0"/>
+<xacro:property name="a3" value="0.02"/>
+<xacro:property name="theta3" value="0.1"/>
+
+<xacro:property name="alpha4" value="${-pi/2}"/>
+<xacro:property name="d4" value="0.165"/>
+<xacro:property name="a4" value="0"/>
+<xacro:property name="theta4" value="0"/>
+
+<xacro:property name="alpha5" value="${pi/2}"/>
+<xacro:property name="d5" value="0"/>
+<xacro:property name="a5" value="0.008"/>
+<xacro:property name="theta5" value="3.66"/>
+
+<xacro:property name="alpha6" value="${pi/2}"/>
+<xacro:property name="d6" value="0.075"/>
+<xacro:property name="a6" value="0.01"/>
+<xacro:property name="theta6" value="${-pi/2}"/>
+
+<!-- Other properties -->
+
+<xacro:property name="rd1" value="0.04"/>
+<xacro:property name="md1" value="0.1"/>
+<xacro:property name="ra1" value="0.03"/>
+<xacro:property name="ma1" value="0.05"/>
+<material name="mat1">
+    <color rgba="0 1 1 1"/>
+</material>
+
+<xacro:property name="rd2" value="0"/>
+<xacro:property name="md2" value="0"/>
+<xacro:property name="ra2" value="0.015"/>
+<xacro:property name="ma2" value="0.08"/>
+<material name="mat2">
+    <color rgba="1 0 1 1"/>
+</material>
+
+<xacro:property name="rd3" value="0"/>
+<xacro:property name="md3" value="0"/>
+<xacro:property name="ra3" value="0.015"/>
+<xacro:property name="ma3" value="0.01"/>
+<material name="mat3">
+    <color rgba="1 1 0 1"/>
+</material>
+
+<xacro:property name="rd4" value="0.01"/>
+<xacro:property name="md4" value="0.08"/>
+<xacro:property name="ra4" value="0"/>
+<xacro:property name="ma4" value="0"/>
+<material name="mat4">
+    <color rgba="0 0 1 1"/>
+</material>
+
+<xacro:property name="rd5" value="0"/>
+<xacro:property name="md5" value="0"/>
+<xacro:property name="ra5" value="0.025"/>
+<xacro:property name="ma5" value="0.01"/>
+<material name="mat5">
+    <color rgba="0 1 0 1"/>
+</material>
+
+<xacro:property name="rd6" value="0.01"/>
+<xacro:property name="md6" value="0.05"/>
+<xacro:property name="ra6" value="0.015"/>
+<xacro:property name="ma6" value="0.01"/>
+<material name="mat6">
+    <color rgba="1 0 0 1"/>
+</material>
+
+</robot>

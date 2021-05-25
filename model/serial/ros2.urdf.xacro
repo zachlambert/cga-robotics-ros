@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="serial">
+
+<xacro:include filename="../macros/inertia.xacro"/>
+<xacro:include filename="parameters2.xacro"/>
+
+<xacro:macro name="arm_link" params="joint parent link a_prev alpha d a theta ra ma rd md material">
+<joint name="${joint}" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="${-pi/3}" upper="${pi/3}" velocity="10"/>
+    <origin
+        rpy="${alpha} ${2*atan(-tan(theta/2)*sin(alpha))} ${2*atan(tan(theta/2)*cos(alpha))}"
+        xyz="${a_prev} ${-d*sin(alpha)} ${d*cos(alpha)}"/>
+    <parent link="${parent}"/>
+    <child link="${link}"/>
+</joint>
+<transmission name="${joint}_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${joint}">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${joint}_actr">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+
+<link name="${link}">
+<xacro:if value="${a!=0}">
+<inertial>
+    <origin rpy="0 ${pi/2} 0" xyz="${a/2} 0 0"/>
+    <mass value="${ma}"/>
+    <xacro:cylinder_inertia_urdf mass="${ma}" radius="${ra}" length="${a}"/>
+</inertial>
+<visual>
+    <geometry>
+        <cylinder length="${a}" radius="${ra}"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${a/2} 0 0"/>
+    <material name="${material}"/>
+</visual>
+<collision>
+    <geometry>
+        <cylinder length="${a}" radius="${ra}"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${a/2} 0 0"/>
+</collision>
+</xacro:if>
+<xacro:if value="${d!=0}">
+<inertial>
+    <origin rpy="0 0 0" xyz="0 0 ${-d/2}"/>
+    <mass value="${md}"/>
+    <xacro:cylinder_inertia_urdf mass="${md}" radius="${rd}" length="${d}"/>
+</inertial>
+<visual>
+    <geometry>
+        <cylinder length="${d}" radius="${rd}"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 0 ${-d/2}"/>
+    <material name="${material}"/>
+</visual>
+<collision>
+    <geometry>
+        <cylinder length="${d}" radius="${rd}"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 0 ${-d/2}"/>
+    <material name="${material}"/>
+</collision>
+</xacro:if>
+</link>
+
+</xacro:macro>
+
+<gazebo>
+<joint name="world_fix" type="fixed">
+    <pose>0 0 0 0 0 0</pose>
+    <parent>world</parent>
+    <child>base_link</child>
+</joint>
+</gazebo>
+
+<link name="base_link"/>
+<joint name="base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="fixed_base"/>
+</joint>
+
+<link name="fixed_base">
+<inertial>
+    <origin rpy="0 0 0" xyz="0 0 ${0.05*d1}"/>
+    <mass value="${md1}"/>
+    <xacro:cylinder_inertia_urdf mass="${md1}" radius="${rd1}" length="${0.1*d1}"/>
+</inertial>
+<visual>
+    <geometry>
+        <cylinder length="${0.1*d1}" radius="${rd1}"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 0 ${0.05*d1}"/>
+    <material name="mat1"/>
+</visual>
+<collision>
+    <geometry>
+        <cylinder length="${0.1*d1}" radius="${rd1}"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 0 ${0.05*d1}"/>
+</collision>
+</link>
+
+<xacro:arm_link joint="theta_1" parent="fixed_base" link="link1"
+    a_prev="0" alpha="${alpha1}" d="${d1}" a="${a1}" theta="${theta1}" ra="${ra1}" ma="${ma1}" rd="${rd1}" md="${md1}" material="mat1"
+/>
+
+<xacro:arm_link joint="theta_2" parent="link1" link="link2"
+    a_prev="${a1}" alpha="${alpha2}" d="${d2}" a="${a2}" theta="${theta2}" ra="${ra2}" ma="${ma2}" rd="${rd2}" md="${md2}" material="mat2"
+/>
+
+<xacro:arm_link joint="theta_3" parent="link2" link="link3"
+    a_prev="${a2}" alpha="${alpha3}" d="${d3}" a="${a3}" theta="${theta3}" ra="${ra3}" ma="${ma3}" rd="${rd3}" md="${md3}" material="mat3"
+/>
+
+<xacro:arm_link joint="theta_4" parent="link3" link="link4"
+    a_prev="${a3}" alpha="${alpha4}" d="${d4}" a="${a4}" theta="${theta4}" ra="${ra4}" ma="${ma4}" rd="${rd4}" md="${md4}" material="mat4"
+/>
+
+<xacro:arm_link joint="theta_5" parent="link4" link="link5"
+    a_prev="${a4}" alpha="${alpha5}" d="${d5}" a="${a5}" theta="${theta5}" ra="${ra5}" ma="${ma5}" rd="${rd5}" md="${md5}" material="mat5"
+/>
+
+<xacro:arm_link joint="theta_6" parent="link5" link="link6"
+    a_prev="${a5}" alpha="${alpha6}" d="${d6}" a="${a6}" theta="${theta6}" ra="${ra6}" ma="${ma6}" rd="${rd6}" md="${md6}" material="mat6"
+/>
+
+<!--
+<xacro:arm_joint name="theta_1" axis="1 0 0" distance="${base_height/2}" parent="fixed_base" child="base" type="continuous" lower_limit="0" upper_limit="0"/>
+
+<xacro:arm_link name="base" length="${base_height/2}" radius="${base_radius}" mass="${base_mass/2}" material="base"/>
+
+<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height/2}" parent="base" child="lower" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
+
+<xacro:arm_link name="lower" length="${lower_length}" radius="${arm_radius}" mass="${lower_mass}" material="arm"/>
+
+<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
+
+<xacro:arm_link name="upper" length="${upper_length}" radius="${arm_radius}" mass="${upper_mass}" material="arm"/>
+
+<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
+
+<xacro:arm_link name="wrist_roll" length="${wrist_roll_length}" radius="${wrist_radius}" mass="${wrist_roll_mass}" material="wrist"/>
+
+<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
+
+<xacro:arm_link name="wrist_pitch" length="${wrist_pitch_length}" radius="${wrist_radius}" mass="${wrist_pitch_mass}" material="wrist"/>
+
+<xacro:arm_joint name="theta_6" axis="1 0 0" distance="${wrist_pitch_length}" parent="wrist_pitch" child="tool_base" type="continuous" lower_limit="0" upper_limit="0"/>
+
+<link name="tool_base">
+<inertial>
+    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
+    <mass value="${tool_base_mass}"/>
+    <xacro:box_inertia_urdf mass="${tool_base_mass}" w="0.1" h="0.1" d="0.05"/>
+</inertial>
+<visual>
+    <geometry>
+        <box size="0.1 0.1 0.05"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
+    <material name="tool"/>
+</visual>
+<collision>
+    <geometry>
+        <box size="0.1 0.1 0.05"/>
+    </geometry>
+    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
+</collision>
+</link>
+
+<link name="gripper_left">
+<visual>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</visual>
+<collision>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</collision>
+<inertial>
+    <origin xyz="0.05 0 0"/>
+    <mass value="${tool_base_mass/3}"/>
+    <xacro:box_inertia_urdf mass="${tool_base_mass/3}" w="0.1" h="0.005" d="0.05"/>
+</inertial>
+</link>
+
+<link name="gripper_right">
+<visual>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</visual>
+<collision>
+    <geometry>
+        <box size="0.1 0.005 0.05"/>
+    </geometry>
+    <origin xyz="0.05 0 0"/>
+</collision>
+<inertial>
+    <origin xyz="0.05 0 0"/>
+    <mass value="${tool_base_mass/3}"/>
+    <xacro:box_inertia_urdf mass="${tool_base_mass/3}" w="0.1" h="0.005" d="0.05"/>
+</inertial>
+</link>
+
+<joint name="gripper" type="revolute">
+    <origin xyz="0.04 -0.05 0" rpy="0 0 0.6"/>
+    <parent link="tool_base"/>
+    <child link="gripper_left"/>
+    <axis xyz="0 0 -1"/>
+    <limit
+        effort="1000.0"
+        lower="0"
+        upper="${pi/2}"
+        velocity="5"
+    />
+</joint>
+<transmission name="gripper_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="gripper">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="gripper_actr">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+
+<joint name="gripper_mimic" type="revolute">
+    <origin xyz="0.04 0.05 0" rpy="0 0 -0.6"/>
+    <parent link="tool_base"/>
+    <child link="gripper_right"/>
+    <axis xyz="0 0 1"/>
+    <limit
+        effort="1000.0"
+        lower="0"
+        upper="${pi/2}"
+        velocity="5"
+    />
+    <mimic joint="gripper"/>
+</joint>
+-->
+
+<gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+</gazebo>
+
+</robot>
