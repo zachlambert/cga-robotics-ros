@@ -27,11 +27,6 @@
 
 <link name="${link}">
 <xacro:if value="${a!=0}">
-<inertial>
-    <origin rpy="0 ${pi/2} 0" xyz="${a/2} 0 0"/>
-    <mass value="${ma}"/>
-    <xacro:cylinder_inertia_urdf mass="${ma}" radius="${ra}" length="${a}"/>
-</inertial>
 <visual>
     <geometry>
         <cylinder length="${a}" radius="${ra}"/>
@@ -47,11 +42,6 @@
 </collision>
 </xacro:if>
 <xacro:if value="${d!=0}">
-<inertial>
-    <origin rpy="0 0 0" xyz="0 0 ${-d/2}"/>
-    <mass value="${md}"/>
-    <xacro:cylinder_inertia_urdf mass="${md}" radius="${rd}" length="${d}"/>
-</inertial>
 <visual>
     <geometry>
         <cylinder length="${d}" radius="${rd}"/>
@@ -67,6 +57,15 @@
     <material name="${material}"/>
 </collision>
 </xacro:if>
+<inertial>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <mass value="${ma+md}"/>
+    <inertia
+        ixx="${ma*(ra**2)/2 + md*(rd**2)/4 + md*(d**2)/3}"
+        iyy="${ma*(ra**2)/4 + ma*(a**2)/3 + md*(rd**2)/4 + md*(d**2)/3}"
+        izz="${md*(rd**2)/2 + ma*(ra**2)/4 + ma*(a**2)/3}"
+        ixy="0" ixz="0" iyz="0"/>
+</inertial>
 </link>
 
 </xacro:macro>
@@ -81,14 +80,14 @@
 
 <link name="base_link"/>
 <joint name="base_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <origin rpy="0 0 0" xyz="0 0 ${0.1*d1}"/>
     <parent link="base_link"/>
     <child link="fixed_base"/>
 </joint>
 
 <link name="fixed_base">
 <inertial>
-    <origin rpy="0 0 0" xyz="0 0 ${0.05*d1}"/>
+    <origin rpy="0 0 0" xyz="0 0 ${-0.05*d1}"/>
     <mass value="${md1}"/>
     <xacro:cylinder_inertia_urdf mass="${md1}" radius="${rd1}" length="${0.1*d1}"/>
 </inertial>
@@ -96,19 +95,19 @@
     <geometry>
         <cylinder length="${0.1*d1}" radius="${rd1}"/>
     </geometry>
-    <origin rpy="0 0 0" xyz="0 0 ${0.05*d1}"/>
+    <origin rpy="0 0 0" xyz="0 0 ${-0.05*d1}"/>
     <material name="mat1"/>
 </visual>
 <collision>
     <geometry>
         <cylinder length="${0.1*d1}" radius="${rd1}"/>
     </geometry>
-    <origin rpy="0 0 0" xyz="0 0 ${0.05*d1}"/>
+    <origin rpy="0 0 0" xyz="0 0 ${-0.05*d1}"/>
 </collision>
 </link>
 
 <xacro:arm_link joint="theta_1" parent="fixed_base" link="link1"
-    a_prev="0" alpha="${alpha1}" d="${d1}" a="${a1}" theta="${theta1}" ra="${ra1}" ma="${ma1}" rd="${rd1}" md="${md1}" material="mat1"
+    a_prev="0" alpha="${alpha1}" d="${0.9*d1}" a="${a1}" theta="${theta1}" ra="${ra1}" ma="${ma1}" rd="${rd1}" md="${md1}" material="mat1"
 />
 
 <xacro:arm_link joint="theta_2" parent="link1" link="link2"
@@ -144,11 +143,27 @@
         <box size="0.02 0.01 0.05"/>
     </geometry>
     <origin xyz="0 0 0.025"/>
+    <gazebo>
+    <surface>
+        <contact>
+            <ode>
+                <kp>1e15</kp>
+                <kd>1e13</kd>
+            </ode>
+        </contact>
+        <friction>
+            <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+            </ode>
+        </friction>
+    </surface>
+    </gazebo>
 </collision>
 <inertial>
     <origin xyz="0 0 0.025"/>
-    <mass value="${ma6/5}"/>
-    <xacro:box_inertia_urdf mass="${ma6}" w="0.02" h="0.01" d="0.05"/>
+    <mass value="${ma6*2}"/>
+    <xacro:box_inertia_urdf mass="${ma6*2}" w="0.02" h="0.01" d="0.05"/>
 </inertial>
 </link>
 
@@ -165,11 +180,27 @@
         <box size="0.02 0.01 0.05"/>
     </geometry>
     <origin xyz="0 0 0.025"/>
+    <gazebo>
+    <surface>
+        <contact>
+            <ode>
+                <kp>1e15</kp>
+                <kd>1e13</kd>
+            </ode>
+        </contact>
+        <friction>
+            <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+            </ode>
+        </friction>
+    </surface>
+    </gazebo>
 </collision>
 <inertial>
     <origin xyz="0 0 0.025"/>
-    <mass value="${ma6/5}"/>
-    <xacro:box_inertia_urdf mass="${ma6}" w="0.02" h="0.01" d="0.05"/>
+    <mass value="${ma6*2}"/>
+    <xacro:box_inertia_urdf mass="${ma6*2}" w="0.02" h="0.01" d="0.05"/>
 </inertial>
 </link>
 
@@ -212,6 +243,12 @@
 
 <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+    <plugin name="gripper_mimic_joint_plugin" filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so">
+        <joint>gripper</joint>
+        <mimicJoint>gripper_mimic</mimicJoint>
+        <hasPID />
+        <maxEffort>5000</maxEffort>
+    </plugin>
 </gazebo>
 
 </robot>

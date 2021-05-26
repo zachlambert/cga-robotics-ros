@@ -1,10 +1,10 @@
-# Omitting dynamics - difficult to get it right
-
-# gazebo_ros_control:
-#     pid_gains:
-#         theta_1: {p: 20, i: 0, d: 1}
-#         theta_2: {p: 80, i: 0, d: 5}
-#         theta_3: {p: 30, i: 0, d: 1}
-#         theta_4: {p: 20, i: 0, d: 0.1}
-#         theta_5: {p: 5, i: 0, d: 0.5}
-#         theta_6: {p: 1, i: 0, d: 0.1}
+gazebo_ros_control:
+    pid_gains:
+        theta_1: {p: 100, i: 5, d: 0.5}
+        theta_2: {p: 100, i: 5, d: 0.5}
+        theta_3: {p: 50, i: 2, d: 0.2}
+        theta_4: {p: 50, i: 2, d: 0.2}
+        theta_5: {p: 10, i: 0.1, d: 0.05}
+        theta_6: {p: 10, i: 0.1, d: 0.01}
+        gripper: {p: 5, i: 0.05, d: 0.005}
+        gripper_mimic: {p: 5, i: 0.05, d: 0.005}

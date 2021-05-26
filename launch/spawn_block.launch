@@ -18,4 +18,10 @@
         type="spawn_model"
         args="-param block_description_sdf -sdf -x 0 -y 0 -z 0 -model block -b -gazebo_namespace gzserver"
     />
+    <node
+        name="spawn_model_block2"
+        pkg="gazebo_ros"
+        type="spawn_model"
+        args="-param block_description_sdf -sdf -x 0 -y 0 -z 0 -model block2 -b -gazebo_namespace gzserver"
+    />
 </launch>
