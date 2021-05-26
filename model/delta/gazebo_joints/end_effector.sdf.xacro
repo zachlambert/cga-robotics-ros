@@ -46,7 +46,7 @@
 </joint>
 
 <joint name="gripper" type="revolute">
-    <pose>0 0 0 0.6 0 0</pose>
+    <pose> 0 0 0 0 0 0</pose>
     <parent>gripper_base</parent>
     <child>gripper_left</child>
     <axis>
@@ -60,7 +60,7 @@
 </joint>
 
 <joint name="gripper_mimic" type="revolute">
-    <pose>0 0 0 0 0 0</pose>
+    <pose> 0 0 0 0 0 0</pose>
     <parent>gripper_base</parent>
     <child>gripper_right</child>
     <axis>
