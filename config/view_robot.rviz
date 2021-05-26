@@ -75,6 +75,16 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        gripper_left:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gripper_right:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         link1:
           Alpha: 1
           Show Axes: false
@@ -117,10 +127,10 @@ Visualization Manager:
       Class: rviz/Pose
       Color: 255; 25; 0
       Enabled: true
-      Head Length: 0.019999999552965164
+      Head Length: 0.029999999329447746
       Head Radius: 0.014999999664723873
       Name: Pose
-      Shaft Length: 0.019999999552965164
+      Shaft Length: 0.029999999329447746
       Shaft Radius: 0.009999999776482582
       Shape: Arrow
       Topic: /ee_pose
@@ -198,25 +208,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.6595684289932251
+      Distance: 0.7921328544616699
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.14982032775878906
-        Y: -0.028660748153924942
-        Z: 0.14026519656181335
+        X: 0.19752104580402374
+        Y: 0.02329830452799797
+        Z: 0.13671810925006866
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.18020260334014893
+      Pitch: 0.3552025854587555
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.2453700751066208
+      Yaw: 4.4885663986206055
     Saved: ~
 Window Geometry:
   Displays:

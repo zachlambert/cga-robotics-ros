@@ -131,95 +131,53 @@
     a_prev="${a5}" alpha="${alpha6}" d="${d6}" a="${a6}" theta="${theta6}" ra="${ra6}" ma="${ma6}" rd="${rd6}" md="${md6}" material="mat6"
 />
 
-<!--
-<xacro:arm_joint name="theta_1" axis="1 0 0" distance="${base_height/2}" parent="fixed_base" child="base" type="continuous" lower_limit="0" upper_limit="0"/>
-
-<xacro:arm_link name="base" length="${base_height/2}" radius="${base_radius}" mass="${base_mass/2}" material="base"/>
-
-<xacro:arm_joint name="theta_2" axis="0 1 0" distance="${base_height/2}" parent="base" child="lower" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
-
-<xacro:arm_link name="lower" length="${lower_length}" radius="${arm_radius}" mass="${lower_mass}" material="arm"/>
-
-<xacro:arm_joint name="theta_3" axis="0 1 0" distance="${lower_length}" parent="lower" child="upper" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
-
-<xacro:arm_link name="upper" length="${upper_length}" radius="${arm_radius}" mass="${upper_mass}" material="arm"/>
-
-<xacro:arm_joint name="theta_4" axis="1 0 0" distance="${upper_length}" parent="upper" child="wrist_roll" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
-
-<xacro:arm_link name="wrist_roll" length="${wrist_roll_length}" radius="${wrist_radius}" mass="${wrist_roll_mass}" material="wrist"/>
-
-<xacro:arm_joint name="theta_5" axis="0 1 0" distance="${wrist_roll_length}" parent="wrist_roll" child="wrist_pitch" type="revolute" lower_limit="${-0.9*pi}" upper_limit="${0.9*pi}"/>
-
-<xacro:arm_link name="wrist_pitch" length="${wrist_pitch_length}" radius="${wrist_radius}" mass="${wrist_pitch_mass}" material="wrist"/>
-
-<xacro:arm_joint name="theta_6" axis="1 0 0" distance="${wrist_pitch_length}" parent="wrist_pitch" child="tool_base" type="continuous" lower_limit="0" upper_limit="0"/>
-
-<link name="tool_base">
-<inertial>
-    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
-    <mass value="${tool_base_mass}"/>
-    <xacro:box_inertia_urdf mass="${tool_base_mass}" w="0.1" h="0.1" d="0.05"/>
-</inertial>
-<visual>
-    <geometry>
-        <box size="0.1 0.1 0.05"/>
-    </geometry>
-    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
-    <material name="tool"/>
-</visual>
-<collision>
-    <geometry>
-        <box size="0.1 0.1 0.05"/>
-    </geometry>
-    <origin rpy="0 ${pi/2} 0" xyz="${0.05/2} 0 0"/>
-</collision>
-</link>
-
 <link name="gripper_left">
 <visual>
     <geometry>
-        <box size="0.1 0.005 0.05"/>
+        <box size="0.02 0.01 0.05"/>
     </geometry>
-    <origin xyz="0.05 0 0"/>
+    <origin xyz="0 0 0.025"/>
+    <material name="mat6"/>
 </visual>
 <collision>
     <geometry>
-        <box size="0.1 0.005 0.05"/>
+        <box size="0.02 0.01 0.05"/>
     </geometry>
-    <origin xyz="0.05 0 0"/>
+    <origin xyz="0 0 0.025"/>
 </collision>
 <inertial>
-    <origin xyz="0.05 0 0"/>
-    <mass value="${tool_base_mass/3}"/>
-    <xacro:box_inertia_urdf mass="${tool_base_mass/3}" w="0.1" h="0.005" d="0.05"/>
+    <origin xyz="0 0 0.025"/>
+    <mass value="${ma6/5}"/>
+    <xacro:box_inertia_urdf mass="${ma6}" w="0.02" h="0.01" d="0.05"/>
 </inertial>
 </link>
 
 <link name="gripper_right">
 <visual>
     <geometry>
-        <box size="0.1 0.005 0.05"/>
+        <box size="0.02 0.01 0.05"/>
     </geometry>
-    <origin xyz="0.05 0 0"/>
+    <origin xyz="0 0 0.025"/>
+    <material name="mat6"/>
 </visual>
 <collision>
     <geometry>
-        <box size="0.1 0.005 0.05"/>
+        <box size="0.02 0.01 0.05"/>
     </geometry>
-    <origin xyz="0.05 0 0"/>
+    <origin xyz="0 0 0.025"/>
 </collision>
 <inertial>
-    <origin xyz="0.05 0 0"/>
-    <mass value="${tool_base_mass/3}"/>
-    <xacro:box_inertia_urdf mass="${tool_base_mass/3}" w="0.1" h="0.005" d="0.05"/>
+    <origin xyz="0 0 0.025"/>
+    <mass value="${ma6/5}"/>
+    <xacro:box_inertia_urdf mass="${ma6}" w="0.02" h="0.01" d="0.05"/>
 </inertial>
 </link>
 
 <joint name="gripper" type="revolute">
-    <origin xyz="0.04 -0.05 0" rpy="0 0 0.6"/>
-    <parent link="tool_base"/>
+    <origin xyz="0.011 0.015 0" rpy="0.2 0 0"/>
+    <parent link="link6"/>
     <child link="gripper_left"/>
-    <axis xyz="0 0 -1"/>
+    <axis xyz="-1 0 0"/>
     <limit
         effort="1000.0"
         lower="0"
@@ -239,10 +197,10 @@
 </transmission>
 
 <joint name="gripper_mimic" type="revolute">
-    <origin xyz="0.04 0.05 0" rpy="0 0 -0.6"/>
-    <parent link="tool_base"/>
+    <origin xyz="0.011 -0.015 0" rpy="-0.2 0 0"/>
+    <parent link="link6"/>
     <child link="gripper_right"/>
-    <axis xyz="0 0 1"/>
+    <axis xyz="1 0 0"/>
     <limit
         effort="1000.0"
         lower="0"
@@ -251,7 +209,6 @@
     />
     <mimic joint="gripper"/>
 </joint>
--->
 
 <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
