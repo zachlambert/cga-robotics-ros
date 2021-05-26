@@ -117,6 +117,20 @@
             <size>0.03 0.005 0.05</size>
         </box>
     </geometry>
+    <surface>
+        <contact>
+            <ode>
+                <kp>1e15</kp>
+                <kd>1e13</kd>
+            </ode>
+        </contact>
+        <friction>
+            <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+            </ode>
+        </friction>
+    </surface>
 </collision>
 <inertial>
     <pose>0 0 -0.025 0 0 0</pose>
@@ -147,6 +161,20 @@
             <size>0.03 0.005 0.05</size>
         </box>
     </geometry>
+    <surface>
+        <contact>
+            <ode>
+                <kp>1e15</kp>
+                <kd>1e13</kd>
+            </ode>
+        </contact>
+        <friction>
+            <ode>
+                <mu>1</mu>
+                <mu2>1</mu2>
+            </ode>
+        </friction>
+    </surface>
 </collision>
 <inertial>
     <pose>0 0 -0.025 0 0 0</pose>

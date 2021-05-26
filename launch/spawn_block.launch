@@ -1,0 +1,21 @@
+<launch>
+    <!-- Set robot dimensions and load urdf and sdf -->
+
+    <param
+        name="block_description"
+        command="xacro '$(find cga_robotics_ros)/model/serial/ros2.urdf.xacro'"
+    />
+
+    <!-- Spawn model in gazebo -->
+
+    <param
+        name="block_description_sdf"
+        command="xacro '$(find cga_robotics_ros)/model/block.sdf'"
+    />
+    <node
+        name="spawn_model_block"
+        pkg="gazebo_ros"
+        type="spawn_model"
+        args="-param block_description_sdf -sdf -x 0 -y 0 -z 0 -model block -b -gazebo_namespace gzserver"
+    />
+</launch>

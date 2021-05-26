@@ -31,7 +31,7 @@
 <xacro:property name="lower_mass" value="0.02"/>
 <xacro:property name="ee_mass" value="0.05"/>
 
-<xacro:property name="base_z" value="0.8"/>
+<xacro:property name="base_z" value="0.45"/>
 
 <xacro:property name="ee_height"
     value="${base_z - sqrt(lower_length**2 - (upper_length+base_radius-ee_radius)**2)}"
